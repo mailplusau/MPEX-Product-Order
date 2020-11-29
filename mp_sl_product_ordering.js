@@ -20,7 +20,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
             
             if (context.request.method === 'GET') {
                 var inlineHtml = '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"><script src="//code.jquery.com/jquery-1.11.0.min.js"></script><link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css"><link href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet"><script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script><link rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2060796&c=1048144&h=9ee6accfd476c9cae718&_xt=.css"/><script src="https://1048144.app.netsuite.com/core/media/media.nl?id=2060797&c=1048144&h=ef2cda20731d146b5e98&_xt=.js"></script><link type="text/css" rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2090583&c=1048144&h=a0ef6ac4e28f91203dfe&_xt=.css">';
-                inlineHtml += '<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>';
+                //inlineHtml += '<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>';
                 // Load DataTables
                 inlineHtml += '<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">';
                 inlineHtml += '<script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>';
@@ -33,12 +33,12 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                 });
 
                 if (test) {
-                    zee_id = 779884;//COMMENT
-                    //var zee_id = '';
+                    //zee_id = 779884;//COMMENT
+                    var zee_id = '';
                     if (role != 1000) {
                         zee_id = context.currentRecord.getField({ fieldId: 'custpage_zee_selected' });
                     } else {
-                        // zee_id = runtime.getCurrentUser().id; //Get Franchisee ID-- REMOVE TO TEST
+                        zee_id = runtime.getCurrentUser().id; //Get Franchisee ID-- REMOVE TO TEST
                     }
                     var zeeRecord = record.load({
                         type: record.Type.PARTNER,
@@ -70,7 +70,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                 }
                 inlineHtml += '<br></br>';
                 //Important Instructions box
-                inlineHtml += '<div class="se-pre-con"></div>';
+                inlineHtml += '<div></div>';
                 inlineHtml += '<div class="form-group container test_section">';
                 inlineHtml += '<div style=\"background-color: #cfeefc !important;border: 1px solid #417ed9;padding: 20px 30px 30px 30px\"><b><u>Important Instructions:</u></b>';
                 inlineHtml += '<ul><li><b><u>MPEX Products</u></b>: 1 MPEX product is equivalent to a pack of 10. Please enter the number of 10 packs you require for each item. </li>';
@@ -189,7 +189,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
 
                 inlineHtml += '<br></br>';
 
-                // Heading
+                // // Heading
                 inlineHtml += '<div class="form-group container product_order_section">';
                 inlineHtml += '<div class="row">';
                 inlineHtml += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">YOUR MPEX PRODUCT ORDER</span></h4></div>';
@@ -281,34 +281,6 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
         }
 
         function tableRowCells(id) {
-            //var zee_id = 779884; //comment
-            // zee_id = runtime.getCurrentUser().id; //Get Franchisee ID-- REMOVE TO TEST
-            //var zee_id = '';
-            //  if (role != 1000) {
-            //     zee_id = context.currentRecord.getField({ fieldId: 'custpage_zee_selected' });
-
-            //     console.log("a " + zee_id);
-            //     if (isNullorEmpty(zee_id)) {
-            //         console.log("didn't work");
-            //     } else {
-            //         console.log("worked" + zee_id);
-            //     }
-                 //zee_id = id;
-            //     //if (!isNullorEmpty(id)) {
-            //         console.log("c" + id);
-            //         var val1 = currentRecord.get();
-            //         var a = val1.getValue({
-            //             fieldId: 'custpage_zee_selected',
-            //         });
-            //         var b = $('#zee_dropdown option:selected').val();
-            //         console.log("a" + a);
-            //         console.log("b" + b);
-                 //}
-                
-                
-            // } else {
-            //     // zee_id = runtime.getCurrentUser().id; //Get Franchisee ID-- REMOVE TO TEST
-            // }
             var zeeRecord = record.load({
                 type: record.Type.PARTNER,
                 id: id,
@@ -361,18 +333,14 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
          * @return  {String}    `inlineQty`
          */
         function franchiseeDropdownSection() {
-            // The dropdown is hidden to the user if it's a Franchisee.
-            //var hide_zee_section = (userRole == 1000) ? 'hide' : '';
-            //var disabled_dropdown = (userRole == 1000) ? 'disabled' : '';
-
-            var inlineQty = '<div class="form-group container zee_dropdown_section>';
+            var inlineQty = '<div class="form-group container zee_dropdown_section >';
 
             inlineQty += '<div class="row">';
             // Franchisee dropdown field
             inlineQty += '<div class="col-xs-12 zee_dropdown_div">';
-            inlineQty += '<div class="input-group">';
-            inlineQty += '<span class="input-group-addon col-xs-12" id="zee_dropdown_text">FRANCHISEE</span>';
-            inlineQty += '<select id="zee_dropdown" class="form-control col-xs-12" required>';
+            inlineQty += '<div class="input-group col-xs-12">';
+            inlineQty += '<span class="input-group-addon" id="zee_dropdown_text">FRANCHISEE</span>';
+            inlineQty += '<select id="zee_dropdown" class="form-control" required>';
             inlineQty += '<option></option>';
 
             // Load the franchisees options

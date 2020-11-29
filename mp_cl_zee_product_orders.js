@@ -7,7 +7,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
     function(error, runtime, search, url, record, format, email, currentRecord) {
         var baseURL = 'https://1048144.app.netsuite.com';
         if (runtime.EnvType == "SANDBOX") {
-            var baseURL = 'https://1048144-sb3.app.netsuite.com';
+            baseURL = 'https://1048144-sb3.app.netsuite.com';
         }
         var role = runtime.getCurrentUser().role;
 
@@ -302,50 +302,32 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
 
                 var zeeId = orderResult.getValue('internalid');
 
-                var zeeRecord = record.load({
+                record.submitFields({
                     type: record.Type.PARTNER,
                     id: zeeId,
-                    
+                    values: {
+                        'custentity_mpex_b4': null,
+                        'custentity_mpex_c5': null,
+                        'custentity_mpex_dl': null,
+                        'custentity_mpex_500g': null,
+                        'custentity_mpex_1kg': null,
+                        'custentity_mpex_3kg': null,
+                        'custentity_mpex_5kg': null
+                    },
+                    options: {
+                        enableSourcing: false,
+                        ignoreMandatoryFields : true
+                    }
                 });
-                
-                zeeRecord.setValue({
-                    fieldId: 'custentity_mpex_b4',
-                    value: null
-                });
-                zeeRecord.setValue({
-                    fieldId: 'custentity_mpex_c5',
-                    value: null
-                });
-                zeeRecord.setValue({
-                    fieldId: 'custentity_mpex_dl',
-                    value: null
-                });
-                zeeRecord.setValue({
-                    fieldId: 'custentity_mpex_500g',
-                    value: null
 
-                });
-                zeeRecord.setValue({
-                    fieldId: 'custentity_mpex_1kg',
-                    value: null
-
-                });
-                zeeRecord.setValue({
-                    fieldId: 'custentity_mpex_3kg',
-                    value: null
-
-                });
-                zeeRecord.setValue({
-                    fieldId: 'custentity_mpex_5kg',
-                    value: null
-
-                });
-                
                 return true;
 
             });
+
             alert('All Current Franchise orders have been cleared');
-            
+            var urlVar = baseURL + "/app/site/hosting/scriptlet.nl?script=1094&deploy=1";
+            console.log(urlVar);
+            window.location.href = urlVar;
         }
 
         

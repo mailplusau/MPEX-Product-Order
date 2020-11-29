@@ -59,7 +59,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                     breakType: ui.FieldBreakType.STARTROW
                 }).defaultValue = inlineHtml;
                 
-                form.clientScriptFileId = 4243619; //SB cl_id =4243619, PROD cl_id = 
+                form.clientScriptFileId = 4512553; //SB cl_id =4243619, PROD cl_id = 4512553
                 context.response.writePage(form);
 
             } else {

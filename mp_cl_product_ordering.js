@@ -44,9 +44,9 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 var kg3 = checkNull($('#3kg_text').val());
                 var kg5 = checkNull($('#5kg_text').val());
 
-                var zee_id = 779884;
-                // zee_id = runtime.getCurrentUser().id; //Get Franchisee ID-- REMOVE TO TEST
-                //var zee_id = '';
+                //var zee_id = 779884;
+                //zee_id = runtime.getCurrentUser().id; //Get Franchisee ID-- REMOVE TO TEST
+                var zee_id = '';
                 if (role != 1000) {
                     zee_id = $('#zee_dropdown option:selected').val();
                     var val1 = currentRecord.get();
@@ -57,48 +57,27 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     console.log("zee selected" + zee_id);
                     
                 } else {
-                    // zee_id = runtime.getCurrentUser().id; //Get Franchisee ID-- REMOVE TO TEST
+                    zee_id = runtime.getCurrentUser().id; //Get Franchisee ID-- REMOVE TO TEST
                 }
-                var zeeRecord = record.load({
+
+                record.submitFields({
                     type: record.Type.PARTNER,
                     id: zee_id,
-                    isDynamic: true
+                    values: {
+                        'custentity_mpex_b4': b4,
+                        'custentity_mpex_c5': c5,
+                        'custentity_mpex_dl': dl,
+                        'custentity_mpex_500g': g500,
+                        'custentity_mpex_1kg': kg1,
+                        'custentity_mpex_3kg': kg3,
+                        'custentity_mpex_5kg': kg5
+                    },
+                    options: {
+                        enableSourcing: false,
+                        ignoreMandatoryFields : true
+                    }
                 });
-
-                zeeRecord.setValue({
-                    fieldId: 'custentity_mpex_b4',
-                    value: b4
-                });
-                zeeRecord.setValue({
-                    fieldId: 'custentity_mpex_c5',
-                    value: c5
-                });
-                zeeRecord.setValue({
-                    fieldId: 'custentity_mpex_dl',
-                    value: dl
-                });
-                zeeRecord.setValue({
-                    fieldId: 'custentity_mpex_500g',
-                    value: g500
-                });
-                zeeRecord.setValue({
-                    fieldId: 'custentity_mpex_1kg',
-                    value: kg1
-                });
-                zeeRecord.setValue({
-                    fieldId: 'custentity_mpex_3kg',
-                    value: kg3
-                });
-                zeeRecord.setValue({
-                    fieldId: 'custentity_mpex_5kg',
-                    value: kg5
-                });
-
-                zeeRecord.save({
-                    ignoreMandatoryFields: true
-                });
-                //resultsTable(zee_id);
-                //$('div.col-xs-12.mpex_order_table_div').html(resultsTable());
+                
 
             } else {
                 return false;
