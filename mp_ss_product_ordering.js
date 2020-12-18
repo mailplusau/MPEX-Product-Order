@@ -34,6 +34,55 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
         var currRec = currentRecord.get();
         var ctx = runtime.getCurrentScript();
 
+        // function resetZeeOrders() {
+        //     var ordersSearchResults = loadZeeOrders();
+        //     if (isNullorEmpty(ordersSearchResults)) {
+        //         try {                    
+        //             console.log('Error to load the zee record with zee_id');
+        //             return true;
+        //         } catch (error) {
+        //             if (error instanceof error.SuiteScriptError) {
+        //                 if (error.name == "SSS_MISSING_REQD_ARGUMENT") {
+        //                     console.log('Error to load the zee record with zee_id2');
+        //                 }
+        //             }
+        //         }
+                
+
+        //     }
+
+        //     ordersSearchResults.each(function(orderResult) {
+
+        //         var zeeId = orderResult.getValue('internalid');
+
+        //         record.submitFields({
+        //             type: record.Type.PARTNER,
+        //             id: zeeId,
+        //             values: {
+        //                 'custentity_mpex_b4': null,
+        //                 'custentity_mpex_c5': null,
+        //                 'custentity_mpex_dl': null,
+        //                 'custentity_mpex_500g': null,
+        //                 'custentity_mpex_1kg': null,
+        //                 'custentity_mpex_3kg': null,
+        //                 'custentity_mpex_5kg': null
+        //             },
+        //             options: {
+        //                 enableSourcing: false,
+        //                 ignoreMandatoryFields : true
+        //             }
+        //         });
+
+        //         return true;
+
+        //     });
+
+        //     alert('All Current Franchise orders have been cleared');
+        //     var urlVar = baseURL + "/app/site/hosting/scriptlet.nl?script=1094&deploy=1";
+        //     console.log(urlVar);
+        //     window.location.href = urlVar;
+        // }
+
         function debtCollection() {
             var range_id = ctx.getParameter({ name: 'custscript_debt_inv_range' });
             if (isNullorEmpty(range_id)) {
