@@ -36,7 +36,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                 form.addButton({
                     id : 'process_order',
                     label : 'PROCESS ORDERS',
-                    functionName : 'resetZeeOrders()'
+                    functionName : resetZeeOrders()
                 });
                 
                 
@@ -59,7 +59,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                     breakType: ui.FieldBreakType.STARTROW
                 }).defaultValue = inlineHtml;
                 
-                form.clientScriptFileId = 4512553; //SB cl_id =4243619, PROD cl_id = 4512553
+                form.clientScriptFileId = 4243619; //SB cl_id =4243619, PROD cl_id = 4512553
                 context.response.writePage(form);
 
             } else {
@@ -67,6 +67,24 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
             }
             
 
+        }
+
+        function resetZeeOrders() {
+            var status = task.create({
+                taskType: task.TaskType.SCHEDULED_SCRIPT,
+                scriptId: 'customscript_ss_product_ordering',
+                deploymentId: 'customdeploy_ss_product_ordering',
+            });
+            
+            log.debug({
+                title: 'Scheduled script scheduled',
+                details: task.checkStatus({ taskId: status})
+            });
+
+            alert('All Current Franchise orders have been cleared');
+            var urlVar = baseURL + "/app/site/hosting/scriptlet.nl?script=1094&deploy=1";
+            console.log(urlVar);
+            window.location.href = urlVar;
         }
         return {
             onRequest: onRequest
