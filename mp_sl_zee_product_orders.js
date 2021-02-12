@@ -5,27 +5,43 @@
 
  */
 
-define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log', 'N/redirect', 'N/format'], 
-    function(ui, email, runtime, search, record, http, log, redirect, format) {
+define(['N/ui/serverWidget', 'N/runtime', 'N/log', 'N/task'], 
+    function(ui, runtime, log, task) {
         var role = runtime.getCurrentUser().role;
         function onRequest(context) {  
             
             if (context.request.method === 'GET') {
-                var inlineHtml = '<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"><script src="//code.jquery.com/jquery-1.11.0.min.js"></script><link type="text/css" rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css"><link href="//netdna.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css" rel="stylesheet"><script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script><link rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2060796&c=1048144&h=9ee6accfd476c9cae718&_xt=.css"/><script src="https://1048144.app.netsuite.com/core/media/media.nl?id=2060797&c=1048144&h=ef2cda20731d146b5e98&_xt=.js"></script><link type="text/css" rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2090583&c=1048144&h=a0ef6ac4e28f91203dfe&_xt=.css">';
-                inlineHtml += '<script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>';
+                // Load jQuery
+                var inlineHtml = '<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>';
+                // Load Tooltip
+                inlineHtml += '<script src="https://unpkg.com/@popperjs/core@2"></script>';
+ 
+                // Load Bootstrap
+                inlineHtml += '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">';
+                inlineHtml += '<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>';
                 // Load DataTables
                 inlineHtml += '<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">';
                 inlineHtml += '<script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>';
-                inlineHtml += '<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">';
-                inlineHtml += '<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha384-aJ21OjlMXNL5UyIl/XNwTMqvzeRMZH2w8c5cRVpzpU8Y5bApTppSuUkhZXN0VxHd" crossorigin="anonymous"></script>';
+ 
+                // Load Bootstrap-Select
+                inlineHtml += '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">';
+                inlineHtml += '<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>';
+ 
+                // Load Netsuite stylesheet and script
+                inlineHtml += '<link rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2060796&c=1048144&h=9ee6accfd476c9cae718&_xt=.css"/>';
+                inlineHtml += '<script src="https://1048144.app.netsuite.com/core/media/media.nl?id=2060797&c=1048144&h=ef2cda20731d146b5e98&_xt=.js"></script>';
+                inlineHtml += '<link type="text/css" rel="stylesheet" href="https://1048144.app.netsuite.com/core/media/media.nl?id=2090583&c=1048144&h=a0ef6ac4e28f91203dfe&_xt=.css">';
+                inlineHtml += '<style>.mandatory{color:red;}</style>';
                 
                 var form = ui.createForm({
                     title: 'MPEX Product Orders (ALL ZEEs)'
                 });
+                inlineHtml += '<br></br>';
                 // Open Invoices Datatable
-                inlineHtml += '<div class="form-group container mpex_orders mpex_orders_table">';
+                inlineHtml += '<div class="form-group mpex_orders mpex_orders_table">';
                 inlineHtml += '<div class="row">';
-                inlineHtml += '<div class="col-xs-24" id="mpex_orders_dt_div">';
+                inlineHtml += '<div class="col-xs-12" id="mpex_orders_dt_div">';
+                
                 // It is inserted as inline html in the script mp_cl_open_ticket
                 inlineHtml += '</div></div></div>';
                 form.addButton({
@@ -59,7 +75,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                     breakType: ui.FieldBreakType.STARTROW
                 }).defaultValue = inlineHtml;
                 
-                form.clientScriptFileId = 4243619; //SB cl_id =4243619, PROD cl_id = 4512553
+                form.clientScriptFileId = 4512553; //SB cl_id =4243619, PROD cl_id = 4512553
                 context.response.writePage(form);
 
             } else {
@@ -70,21 +86,21 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
         }
 
         function resetZeeOrders() {
-            var status = task.create({
-                taskType: task.TaskType.SCHEDULED_SCRIPT,
-                scriptId: 'customscript_ss_product_ordering',
-                deploymentId: 'customdeploy_ss_product_ordering',
-            });
+            // var status = task.create({
+            //     taskType: task.TaskType.SCHEDULED_SCRIPT,
+            //     scriptId: 'customscript_ss_product_ordering',
+            //     deploymentId: 'customdeploy_ss_product_ordering'
+            // });
             
-            log.debug({
-                title: 'Scheduled script scheduled',
-                details: task.checkStatus({ taskId: status})
-            });
+            // // log.debug({
+            // //     title: 'Scheduled script scheduled',
+            // //     details: task.checkStatus({ taskId: status})
+            // // });
 
-            alert('All Current Franchise orders have been cleared');
-            var urlVar = baseURL + "/app/site/hosting/scriptlet.nl?script=1094&deploy=1";
-            console.log(urlVar);
-            window.location.href = urlVar;
+            // alert('All Current Franchise orders have been cleared');
+            // var urlVar = "https://1048144-sb3.app.netsuite.com" + "/app/site/hosting/scriptlet.nl?script=1094&deploy=1";
+            // //console.log(urlVar);
+            // //window.location.href = urlVar;
         }
         return {
             onRequest: onRequest

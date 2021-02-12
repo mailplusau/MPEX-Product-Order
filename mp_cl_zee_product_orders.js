@@ -20,15 +20,21 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             var invoice_datatable_inline_html = '<style>';
             invoice_datatable_inline_html += 'table#product_order-preview {font-size: 12px;text-align: center;border: none;}';
             invoice_datatable_inline_html += '.dataTables_wrapper {font-size: 14px;}';
-            invoice_datatable_inline_html += 'table#product_order-preview th {text-align: center;}';
-            invoice_datatable_inline_html += 'table#product_order-preview thead input {width: 100%;}';
-            invoice_datatable_inline_html += '</style>';
-            invoice_datatable_inline_html += '<table cellpadding="15" id="product_order-preview" class="table table-responsive table-striped customer tablesorter" cellspacing="0" style="width: 100%;">';
+            invoice_datatable_inline_html += 'table#product_order-preview th {text-align: center;}.bolded{font-weight: bold;}</style>';
+            //invoice_datatable_inline_html += 'table#product_order-preview thead input {width: 100%;}';
+            //invoice_datatable_inline_html += '</style>';
+            invoice_datatable_inline_html += '<table cellpadding="15" id="product_order-preview" class="table table-responsive table-striped customer tablesorter" style="width: 100%;">';
             invoice_datatable_inline_html += '<thead style="color: white;background-color: #607799;">';
             invoice_datatable_inline_html += '</thead>';
             invoice_datatable_inline_html += '<tbody id="result_orders"></tbody>';
             invoice_datatable_inline_html += '</table>';
             $('#mpex_orders_dt_div').html(invoice_datatable_inline_html);
+
+
+            // ar inlineQty = '<style>table#debt_preview {font-size: 12px;text-align: center;border: none;}.dataTables_wrapper {font-size: 14px;}'
+            // 'table#debt_preview th{text-align: center;} .bolded{font-weight: bold;}</style>';
+            // inlineQty += '<table id="debt_preview" class="table table-responsive table-striped customer tablesorter hide" style="width: 100%;">';
+            // inlineQty += '<thead style="color: white;background-color: #607799;">';
 
             var orders_table = $('#product_order-preview').DataTable({
                 data: ordersDataSet,
