@@ -4,7 +4,7 @@
  * 
  * Module Description
  *
- * Description: Automation of clearing franchisee orders   
+ * Description: Sets status of all active orders to 2/"Processed"   
  * 
  * @Last Modified by:   Sruti Desai
  * 
@@ -14,7 +14,7 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
     function(runtime, search, record, log, task, currentRecord, format) {
         var zee = 0;
         var role = 0;
-
+        var ctx = runtime.getCurrentScript();
         var baseURL = 'https://1048144.app.netsuite.com';
         if (runtime.EnvType == "SANDBOX") {
             baseURL = 'https://system.sandbox.netsuite.com';
@@ -33,67 +33,85 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
         var indexInCallback = 0;
 
         function resetZeeOrders() {
-            var ordersSearchResults = loadZeeOrders();
-            if (isNullorEmpty(ordersSearchResults)) {
-                try {                    
-                    console.log('Error to load the zee record with zee_id');
-                    return true;
-                } catch (error) {
-                    if (error instanceof error.SuiteScriptError) {
-                        if (error.name == "SSS_MISSING_REQD_ARGUMENT") {
-                            console.log('Error to load the zee record with zee_id2');
-                        }
-                    }
-                }
-                
-
+            log.debug({
+                title: 'start',
+                details: 'start'
+            });
+            var zeeIdSet = ctx.getParameter({ name: 'custscript_process_orders' });
+            if (isNullorEmpty(zeeIdSet)) {
+                zeeIdSet = [];
+            } else {
+                zeeIdSet = JSON.parse(zeeIdSet);
             }
 
-            ordersSearchResults.each(function(orderResult) {
-
-                var zeeId = orderResult.getValue('internalid');
-
-                record.submitFields({
-                    type: record.Type.PARTNER,
-                    id: zeeId,
-                    values: {
-                        'custentity_mpex_b4': null,
-                        'custentity_mpex_c5': null,
-                        'custentity_mpex_dl': null,
-                        'custentity_mpex_500g': null,
-                        'custentity_mpex_1kg': null,
-                        'custentity_mpex_3kg': null,
-                        'custentity_mpex_5kg': null
-                    },
-                    options: {
-                        enableSourcing: false,
-                        ignoreMandatoryFields : true
-                    }
-                });
-
-                return true;
-
+            log.debug({
+                title: 'start',
+                details: new Date()
             });
-
-            
-        }
-
-        /**
-         * Load the result set of the invoices records linked to the customer.
-         * @param   {String}                customer_id
-         * @param   {String}                invoice_status
-         * @return  {nlobjSearchResultSet}  invoicesResultSet
-         */
-        function loadZeeOrders() {
-            var zeeResultSet;
             var zeeSearch = search.load({
-                id: 'customsearch_zee_mpex_product_order',
-                type: search.Type.PARTNER
+                id: 'customsearch_mpex_zee_order_search',
+                type: 'customrecord_zee_mpex_order'
             });
             
-            zeeResultSet = zeeSearch.run();
-            
-            return zeeResultSet;
+            zeeSearch.filters.push(search.createFilter({
+                name: 'custrecord_mpex_order_status',
+                operator: search.Operator.IS,
+                values: 1
+            }));
+
+            var zeeResultSet = zeeSearch.run();
+
+            zeeResultSet.each(function(searchResult) {
+                log.debug({
+                    title: 'start2',
+                    details: new Date()
+                });
+                var internalid = searchResult.getValue({ name: 'id'});
+                var zeeId = searchResult.getValue({ name: 'custrecord_mpex_order_franchisee'}); 
+                if (zeeIdSet.indexOf(zeeId) == -1) {
+                    zeeIdSet.push(zeeId);
+                    var usageLimit = ctx.getRemainingUsage();
+                
+                    if (usageLimit < 100) {
+                        zeeIdSet.pop();
+                        var params = {
+                            custscript_process_orders: JSON.stringify(zeeIdSet)
+                        };
+                        var reschedule = task.create({
+                            taskType: task.TaskType.SCHEDULED_SCRIPT,
+                            scriptId: 'customscript_ss_product_ordering',
+                            deploymentId: 'customdeploy_ss_product_ordering',
+                            params: params
+                        });
+                        
+                        reschedule.submit();
+                        
+                        return false;
+                    } else {
+                        var orderRec = record.load({
+                            type: 'customrecord_zee_mpex_order',
+                            id: internalid,
+                        });
+        
+                        orderRec.setValue({ fieldId: 'custrecord_mpex_order_status', value: 2});
+                        orderRec.save({
+                            enableSourcing: true,
+                            ignoreMandatoryFields: true
+                        });
+                        log.debug({
+                            title: 'end',
+                            details: new Date()
+                        });
+                    }
+                    
+                }
+                return true;
+            });
+
+            log.debug({
+                title: 'complete',
+                details: 'complete'
+            });
             
         }
 

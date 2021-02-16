@@ -21,8 +21,6 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             invoice_datatable_inline_html += 'table#product_order-preview {font-size: 12px;text-align: center;border: none;}';
             invoice_datatable_inline_html += '.dataTables_wrapper {font-size: 14px;}';
             invoice_datatable_inline_html += 'table#product_order-preview th {text-align: center;}.bolded{font-weight: bold;}</style>';
-            //invoice_datatable_inline_html += 'table#product_order-preview thead input {width: 100%;}';
-            //invoice_datatable_inline_html += '</style>';
             invoice_datatable_inline_html += '<table cellpadding="15" id="product_order-preview" class="table table-responsive table-striped customer tablesorter" style="width: 100%;">';
             invoice_datatable_inline_html += '<thead style="color: white;background-color: #607799;">';
             invoice_datatable_inline_html += '</thead>';
@@ -30,160 +28,170 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             invoice_datatable_inline_html += '</table>';
             $('#mpex_orders_dt_div').html(invoice_datatable_inline_html);
 
-
-            // ar inlineQty = '<style>table#debt_preview {font-size: 12px;text-align: center;border: none;}.dataTables_wrapper {font-size: 14px;}'
-            // 'table#debt_preview th{text-align: center;} .bolded{font-weight: bold;}</style>';
-            // inlineQty += '<table id="debt_preview" class="table table-responsive table-striped customer tablesorter hide" style="width: 100%;">';
-            // inlineQty += '<thead style="color: white;background-color: #607799;">';
-
             var orders_table = $('#product_order-preview').DataTable({
                 data: ordersDataSet,
                 columns: [
-                    {title: "MP Internal ID"},
-                    { title: "TOLL Account #" },
-                    { title: "Account Name" },
-                    { title: "DL Envelope" },
-                    { title: "C5 Envelope" },
-                    { title: "B4 Envelope" },
-                    { title: "500g Satchel" },
-                    { title: "1kg Satchel" },
-                    { title: "3kg Satchel" },
-                    { title: "5kg Satchel" },
-                    { title: "Total" },
-                    { title: "DX Address" },
-                    { title: "DX Exchange" },
-                    { title: "State" },
-                    { title: "Postcode" }
-                ]
+                    { title: "Date"},           //0
+                    { title: "MP Internal ID"}, //1
+                    { title: "TOLL Account #" },//2
+                    { title: "Account Name" },  //3
+                    { title: "B4 Envelope" },   //4
+                    { title: "500g Satchel" },  //5
+                    { title: "1kg Satchel" },   //6
+                    { title: "3kg Satchel" },   //7
+                    { title: "5kg Satchel" },   //8
+                    { title: "Total" },         //9
+                    { title: "DX Address" },    //10
+                    { title: "DX Exchange" },   //11
+                    { title: "State" },         //12
+                    { title: "Postcode" },      //13
+                    { title: "Connote #"}       //14
+                ],
+                order: [[3, "asc"]],
                 
             });
         
             $('#product_order-preview thead tr').addClass('text-center');
         
-            // Adds a row to the table head row, and adds search filters to each column.
-            $('#product_order-preview thead tr').clone(true).appendTo('#product_order-preview thead');
-            $('#product_order-preview thead tr:eq(1) th').each(function (i) {
-                var title = $(this).text();
-                $(this).html('<input type="text" placeholder="Search ' + title + '" />');
-        
-                $('input', this).on('keyup change', function () {
-                    if (orders_table.column(i).search() !== this.value) {
-                        orders_table
-                            .column(i)
-                            .search(this.value)
-                            .draw();
-                    }
-                });
-            });
-
             updateOrdersTable();
-                
-            
-            
-            
+
+            $(document).ready(function(){
+
+                $("#process_order").click(function(){
+                   alert("Please wait while all active orders are processed");
+                   $('.progress').addClass('show');
+                   setTimeout(function(){ processMove(); }, 100);
+                });
+            });      
         }
 
-        
-        function updateOrdersTable() {
-            var ordersSearchResults = loadZeeOrders();
+        function processMove() {
+            var currentScript = currentRecord.get();
+            var initial_count = currentScript.getValue({fieldId: 'numActive'});
             
-            $('#result_orders').empty();
-            var ordersDataSet = [];
-            var ordersDataSet2 = [];
-            if (isNullorEmpty(ordersSearchResults)) {
-                try {                    
-                    console.log('Error to load the zee record with zee_id');
-                    return true;
-                } catch (error) {
-                    if (error instanceof error.SuiteScriptError) {
-                        if (error.name == "SSS_MISSING_REQD_ARGUMENT") {
-                            console.log('Error to load the zee record with zee_id2');
-                        }
-                    }
+            
+            console.log("initial", initial_count);
+            var totalTime = initial_count*20;
+            console.log("total", totalTime);
+            var elem = document.getElementById("progress-records");
+            var width = 0;
+            var id = setInterval(frame, totalTime);
+            function frame() {
+                if (width >= 95) {
+                    clearInterval(id);
+                    deleteProgress(initial_count);
+                    
+                } else {
+                    width++;
+                    elem.style.width = width + "%";
+                    elem.innerHTML = width + "%";
                 }
-                
-
             }
+        }
 
+
+        function updateOrdersTable() {
+
+            $('#result_orders').empty();
+
+            var zeeIdSet = [];
+            var ordersDataSet = [];
+
+            var zeeSearch = search.load({
+                id: 'customsearch_mpex_zee_order_search',
+                type: 'customrecord_zee_mpex_order'
+            });
+            
+            zeeSearch.filters.push(search.createFilter({
+                name: 'custrecord_mpex_order_status',
+                operator: search.Operator.IS,
+                values: 1
+            }));
+
+            var zeeResultSet = zeeSearch.run();
+
+            zeeResultSet.each(function(searchResult) {    
+                var status = searchResult.getValue({ name: 'custrecord_mpex_order_status'});
+                var connote = searchResult.getValue({ name: 'custrecord_mpex_order_connote'});
+                var zeeId =   searchResult.getValue({name: "custrecord_mpex_order_franchisee"});
+
+                if (status == 1 && isNullorEmpty(connote) && zeeIdSet.indexOf(zeeId) == -1) {
+                    zeeIdSet.push(zeeId);
+                    var date = searchResult.getValue({name: "custrecord_mpex_order_date" });
+                    var tollAcctNum = searchResult.getValue({name: "custrecord_mpex_order_toll_acc_num" });
+                    var accName = 'MailPlus-' + searchResult.getValue({name: "companyname", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
+                    var mpex_b4 = searchResult.getValue({name: "custrecord_mpex_order_b4" });
+                    var mpex_500g = searchResult.getValue({name: "custrecord_mpex_order_500_satchel" });
+                    var mpex_1kg = searchResult.getValue({name: "custrecord_mpex_order_1kg_satchel" });
+                    var mpex_3kg = searchResult.getValue({name: "custrecord_mpex_order_3kg_satchel" });
+                    var mpex_5kg = searchResult.getValue({name: "custrecord_mpex_order_5kg_satchel" });
+                    var total = parseInt(mpex_b4) + parseInt(mpex_500g) + parseInt(mpex_1kg) + parseInt(mpex_3kg) + parseInt(mpex_5kg);
+
+                    var dxAddr = searchResult.getValue({name: "custrecord_mpex_order_dx_addr" });
+                    var dxExch = searchResult.getValue({name: "custrecord_mpex_order_dx_exch" });
+                    var state = searchResult.getValue({name: "custrecord_mpex_order_state" });
+                    var zip = searchResult.getValue({name: "custrecord_mpex_order_postcode" });
+                    var connote = '';
+                    ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote]);
+
+                }
+                return true;
+            });
+
+
+            var zeeSearch = search.load({
+                id: 'customsearch_zee_mpex_product_order',
+                type: search.Type.PARTNER
+            });
+
+            var ordersSearchResults = zeeSearch.run();
+            
             ordersSearchResults.each(function(orderResult) {
 
                 var zeeId = orderResult.getValue('internalid');
+                if (zeeIdSet.indexOf(zeeId) == -1) {
+                    zeeIdSet.push(zeeId);
+                    var tollAcctNum = orderResult.getValue('custentity_toll_acc_number');
+                    var accName = 'MailPlus-' + orderResult.getValue('companyname');
 
-                var tollAcctNum = orderResult.getValue('custentity_toll_acc_number');
+                    var mpex_b4 = '';
+                    var mpex_500g = '';
+                    var mpex_1kg = '';
+                    var mpex_3kg = '';
+                    var mpex_5kg = '';
+
+                    var total = 0;
                     
-               
-                var accName = 'MailPlus-' + orderResult.getValue('companyname');
+                    var dxAddr = orderResult.getValue({
+                        name: "custrecord_ap_lodgement_addr2",
+                        join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
+                        label: "Address 2"
+                    });
+                            
+                    var dxExch = orderResult.getValue({
+                        name: "custrecord_ap_lodgement_suburb",
+                        join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
+                        label: "Suburb"
+                    });
 
-                var mpex_dl = orderResult.getValue('custentity_mpex_dl');
-                var mpex_c5 = orderResult.getValue('custentity_mpex_c5');
-                var mpex_b4 = orderResult.getValue('custentity_mpex_b4');
-                var mpex_500g = orderResult.getValue('custentity_mpex_500g');
-                var mpex_1kg = orderResult.getValue('custentity_mpex_1kg');
-                var mpex_3kg = orderResult.getValue('custentity_mpex_3kg');
-                var mpex_5kg = orderResult.getValue('custentity_mpex_5kg');
-                var mpex1 = parseInt(mpex_dl);
-                if (isNullorEmpty(mpex_dl)) {
-                    mpex1 = 0;
+                    // custrecord_ap_lodgement_site_name
+                    var state = orderResult.getText({
+                        name: "custrecord_ap_lodgement_site_state",
+                        join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
+                        label: "State"
+                    });
+                    var zip = orderResult.getValue({
+                        name: "custrecord_ap_lodgement_postcode",
+                        join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
+                        label: "Post Code"
+                    });
+                    var date = formatDate(new Date());
+                    var connote = '';
+                    console.log('orderResult : ', orderResult);
+                    console.log('vals: ', zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip)
+                    ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote]);
                 }
-                var mpex2 = parseInt(mpex_c5);
-                if (isNullorEmpty(mpex_c5)) {
-                    mpex2 = 0;
-                }
-                var mpex3 = parseInt(mpex_b4);
-                if (isNullorEmpty(mpex_b4)) {
-                    mpex3 = 0;
-                }
-                var mpex4 = parseInt(mpex_500g);
-                if (isNullorEmpty(mpex_500g)) {
-                    mpex4 = 0;
-                }
-                var mpex5 = parseInt(mpex_1kg);
-                if (isNullorEmpty(mpex_1kg)) {
-                    mpex5 = 0;
-                }
-                var mpex6 = parseInt(mpex_3kg);
-                if (isNullorEmpty(mpex_3kg)) {
-                    mpex6 = 0;
-                }
-                var mpex7 = parseInt(mpex_5kg);
-                if (isNullorEmpty(mpex_5kg)) {
-                    mpex7 = 0;
-                }
-
-                var total = mpex1 + mpex2 + mpex3 + mpex4 + mpex5 + mpex6 + mpex7;
                 
-                
-                var dxAddr = orderResult.getValue({
-                    name: "custrecord_ap_lodgement_addr2",
-                    join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
-                    label: "Address 2"
-                 });
-                
-            
-                var dxExch = orderResult.getValue({
-                    name: "custrecord_ap_lodgement_suburb",
-                    join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
-                    label: "Suburb"
-                 });
-
-                // custrecord_ap_lodgement_site_name
-                var state = orderResult.getText({
-                    name: "custrecord_ap_lodgement_site_state",
-                    join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
-                    label: "State"
-                 });
-                var zip = orderResult.getValue({
-                    name: "custrecord_ap_lodgement_postcode",
-                    join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
-                    label: "Post Code"
-                 });
-
-                console.log('orderResult : ', orderResult);
-                console.log('vals: ', zeeId, tollAcctNum, accName, mpex_dl, mpex_c5, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip)
-                ordersDataSet.push([zeeId, tollAcctNum, accName, mpex_dl, mpex_c5, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip]);
-                var addr1 = "\"" + dxAddr + "\"";
-
-                ordersDataSet2.push([zeeId, tollAcctNum, accName, mpex_dl, mpex_c5, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, addr1, dxExch, state, zip]);
                 
                 return true;
 
@@ -194,31 +202,53 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             datatable.clear();
             datatable.rows.add(ordersDataSet);
             datatable.draw();
-            saveCsv(ordersDataSet2);
+            saveCsv(ordersDataSet);
             $('[data-toggle="tooltip"]').tooltip();
 
             return true;
         }
-        
-        /**
-         * Load the result set of the invoices records linked to the customer.
-         * @param   {String}                customer_id
-         * @param   {String}                invoice_status
-         * @return  {nlobjSearchResultSet}  invoicesResultSet
-         */
-        function loadZeeOrders() {
-            var zeeResultSet;
+
+        function checkActive(zee) {
             var zeeSearch = search.load({
-                id: 'customsearch_zee_mpex_product_order',
-                type: search.Type.PARTNER
+                id: 'customsearch_mpex_zee_order_search',
+                type: 'customrecord_zee_mpex_order'
             });
             
-            zeeResultSet = zeeSearch.run();
+            zeeSearch.filters.push(search.createFilter({
+                name: 'custrecord_mpex_order_franchisee',
+                operator: search.Operator.IS,
+                values: zee
+            }));
+
+            zeeSearch.filters.push(search.createFilter({
+                name: 'custrecord_mpex_order_status',
+                operator: search.Operator.IS,
+                values: 1
+            }));
+
             
-            return zeeResultSet;
+            var zeeResultSet = zeeSearch.run();
+            var activeOrder = 0;
+
+            zeeResultSet.each(function(searchResult) {
+                var connote = searchResult.getValue({ name: 'custrecord_mpex_order_connote'});
+                var status = searchResult.getValue({ name: 'custrecord_mpex_order_status'});
+                
+                if (status == 1 && isNullorEmpty(connote)) {
+                    activeOrder = searchResult.getValue({ name: 'id'});
+                    mpex_b4 = mpexOrder.getValue({fieldId: "custrecord_mpex_order_b4" });
+                    mpex_500g = mpexOrder.getValue({fieldId: "custrecord_mpex_order_500_satchel" });
+                    mpex_1kg = mpexOrder.getValue({fieldId: "custrecord_mpex_order_1kg_satchel" });
+                    mpex_3kg = mpexOrder.getValue({fieldId: "custrecord_mpex_order_3kg_satchel" });
+                    mpex_5kg = mpexOrder.getValue({fieldId: "custrecord_mpex_order_5kg_satchel" });
+                    return false;
+                }
+                return true;
+            });
+            
+            return activeOrder;
             
         }
-
         function saveRecord(context) {
 
             return true;
@@ -230,14 +260,16 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
          * @param {Array} ordersDataSet The `billsDataSet` created in `loadDatatable()`.
          */
         function saveCsv(ordersDataSet) {
-            var headers = ["MP Internal ID", "TOLL Account #", "Account Name", "DL Envelope", "C5 Envelope", "B4 Envelope", "500g Satchel", "1kg Satchel", "3kg Satchel", "5kg Satchel", "Total", "DX Address", "DX Exchange", "State", "Postcode"]
-            headers = headers.slice(0, headers.length); // .join(', ')
+            var sep = "sep=;";
+            var headers = ["Date", "MP Internal ID", "TOLL Account #", "Account Name", "B4 Envelope", "500g Satchel", "1kg Satchel", "3kg Satchel", "5kg Satchel", "Total", "DX Address", "DX Exchange", "State", "Postcode", "Connote #"]
+            headers = headers.join(';'); // .join(', ')
 
-            var csv = headers + "\n";
+            var csv = sep + "\n" + headers + "\n";
             
             ordersDataSet.forEach(function(row) {
+                row = row.join(';');
                 console.log("tesT"+ row);
-                csv += row.join(',');
+                csv += row;
                 csv += "\n";
             });
 
