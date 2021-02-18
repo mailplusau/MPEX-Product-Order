@@ -67,6 +67,51 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 
 
             }
+
+            $( "#500g_text" ).blur(function() {
+                var val = $(this).val();
+                if( val % 10 != 0){
+                    var remainderVal = (val % 10);
+                    var newVal = (val-remainderVal) + 10;
+                    $(this).val(newVal);
+                }
+            });
+
+            $( "#5kg_text" ).blur(function() {
+                var val = $(this).val();
+                if( val % 10 != 0){
+                    var remainderVal = (val % 10);
+                    var newVal = (val-remainderVal) + 10;
+                    $(this).val(newVal);
+                }
+            });
+
+            $( "#1kg_text" ).blur(function() {
+                var val = $(this).val();
+                if( val % 10 != 0){
+                    var remainderVal = (val % 10);
+                    var newVal = (val-remainderVal) + 10;
+                    $(this).val(newVal);
+                }
+            });
+
+            $( "#b4_text" ).blur(function() {
+                var val = $(this).val();
+                if( val % 10 != 0){
+                    var remainderVal = (val % 10);
+                    var newVal = (val-remainderVal) + 10;
+                    $(this).val(newVal);
+                }
+            });
+
+            $( "#3kg_text" ).blur(function() {
+                var val = $(this).val();
+                if( val % 10 != 0){
+                    var remainderVal = (val % 10);
+                    var newVal = (val-remainderVal) + 10;
+                    $(this).val(newVal);
+                }
+            });
             $(document).on('change', '.zee_dropdown', function(event) {
                 var zee = $(this).val();
                 var currentScript = currentRecord.get();            

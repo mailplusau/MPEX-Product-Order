@@ -60,9 +60,20 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 $("#process_order").click(function(){
                    alert("Please wait while all active orders are processed");
                    $('.progress').addClass('show');
-                   setTimeout(function(){ processMove(); }, 100);
+                   //setTimeout(function(){ processMove(); }, 100);
                 });
             });      
+        }
+
+        function resetZeeOrders() {
+            var zee = runtime.getCurrentUser().id;
+            var currentScript = currentRecord.get();            
+            
+            //prod = 1094, sb = ?
+            //var url = 'https://1048144-sb3.app.netsuite.com' + "/app/site/hosting/scriptlet.nl?script=1089&deploy=1";
+            var url = baseURL + "/app/site/hosting/scriptlet.nl?script=1094&deploy=1";  
+            url += "&process=" + true + "";
+            window.location.href = url;
         }
 
         function processMove() {
@@ -208,47 +219,6 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             return true;
         }
 
-        function checkActive(zee) {
-            var zeeSearch = search.load({
-                id: 'customsearch_mpex_zee_order_search',
-                type: 'customrecord_zee_mpex_order'
-            });
-            
-            zeeSearch.filters.push(search.createFilter({
-                name: 'custrecord_mpex_order_franchisee',
-                operator: search.Operator.IS,
-                values: zee
-            }));
-
-            zeeSearch.filters.push(search.createFilter({
-                name: 'custrecord_mpex_order_status',
-                operator: search.Operator.IS,
-                values: 1
-            }));
-
-            
-            var zeeResultSet = zeeSearch.run();
-            var activeOrder = 0;
-
-            zeeResultSet.each(function(searchResult) {
-                var connote = searchResult.getValue({ name: 'custrecord_mpex_order_connote'});
-                var status = searchResult.getValue({ name: 'custrecord_mpex_order_status'});
-                
-                if (status == 1 && isNullorEmpty(connote)) {
-                    activeOrder = searchResult.getValue({ name: 'id'});
-                    mpex_b4 = mpexOrder.getValue({fieldId: "custrecord_mpex_order_b4" });
-                    mpex_500g = mpexOrder.getValue({fieldId: "custrecord_mpex_order_500_satchel" });
-                    mpex_1kg = mpexOrder.getValue({fieldId: "custrecord_mpex_order_1kg_satchel" });
-                    mpex_3kg = mpexOrder.getValue({fieldId: "custrecord_mpex_order_3kg_satchel" });
-                    mpex_5kg = mpexOrder.getValue({fieldId: "custrecord_mpex_order_5kg_satchel" });
-                    return false;
-                }
-                return true;
-            });
-            
-            return activeOrder;
-            
-        }
         function saveRecord(context) {
 
             return true;
@@ -333,6 +303,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             pageInit: pageInit,
             saveRecord: saveRecord,
             downloadCsv: downloadCsv,
+            resetZeeOrders: resetZeeOrders
         };  
     }
 

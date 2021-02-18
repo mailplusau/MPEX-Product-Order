@@ -67,7 +67,15 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
                     details: new Date()
                 });
                 var internalid = searchResult.getValue({ name: 'id'});
+                log.debug({
+                    title: 'internalid',
+                    details: internalid
+                })
                 var zeeId = searchResult.getValue({ name: 'custrecord_mpex_order_franchisee'}); 
+                var status = searchResult.getValue({ name: 'custrecord_mpex_order_status'}); 
+                if (status != 1) {
+                    return true;
+                }
                 if (zeeIdSet.indexOf(zeeId) == -1) {
                     zeeIdSet.push(zeeId);
                     var usageLimit = ctx.getRemainingUsage();
@@ -84,6 +92,10 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
                             params: params
                         });
                         
+                        log.debug({
+                            title: 'rescheduling',
+                            details: 'rescheduling'
+                        })
                         reschedule.submit();
                         
                         return false;

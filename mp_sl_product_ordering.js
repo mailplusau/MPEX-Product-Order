@@ -71,7 +71,10 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                             kg3 = searchResult.getValue({name: "custrecord_mpex_order_3kg_satchel" });
                             kg5 = searchResult.getValue({name: "custrecord_mpex_order_5kg_satchel" });
                             test = true;
-
+                            log.debug({
+                                title: 'b42',
+                                details: b4
+                            });
                             return false;
                         }
                         return true;
@@ -250,7 +253,10 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
         function inputFields(b4, g500, kg1, kg3, kg5, test) {
             //Add Break
             //var inlineQty = '<div class="form-group container break_section"><div class="row"></div></div>'
-                            
+            log.debug({
+                title: 'b4',
+                details: b4
+            });                
             //500g AND 5KG Options
             var inlineQty = '<div class="form-group container g500_section">';
             inlineQty += '<div class="row">';
