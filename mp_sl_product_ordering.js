@@ -44,7 +44,13 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                 });
 
                 if (!isNullorEmpty(context.request.parameters.zee) || role == 1000) {
-                    var zee = context.request.parameters.zee;
+                    var zee;
+                    if (role == 1000) {
+                        zee = runtime.getCurrentUser().id;
+                    } else {
+                        zee = context.request.parameters.zee;
+                    }
+                     
                     var zeeSearch = search.load({
                         id: 'customsearch_mpex_zee_order_search',
                         type: 'customrecord_zee_mpex_order'
@@ -71,10 +77,6 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                             kg3 = searchResult.getValue({name: "custrecord_mpex_order_3kg_satchel" });
                             kg5 = searchResult.getValue({name: "custrecord_mpex_order_5kg_satchel" });
                             test = true;
-                            log.debug({
-                                title: 'b42',
-                                details: b4
-                            });
                             return false;
                         }
                         return true;
@@ -98,41 +100,24 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
 
                 inlineHtml += inputFields(b4, g500, kg1, kg3, kg5, test);
 
-                
-                if (role == 1000) {
+
+                if (!isNullorEmpty(context.request.parameters.zee) && context.request.parameters.zee != 0) {
                     form.addField({
                         id: 'custpage_zee_selected',
                         type: ui.FieldType.TEXT,
                         label: 'zee'
                     }).updateDisplayType({
                         displayType: ui.FieldDisplayType.HIDDEN
-                    }).defaultValue = runtime.getCurrentUser().id;
+                    }).defaultValue = context.request.parameters.zee;
                 } else {
-
-                    if (!isNullorEmpty(context.request.parameters.zee) && context.request.parameters.zee != 0) {
-                        log.debug({
-                            title: 'in here',
-                            details: 'in here'
-                        });
-                        form.addField({
-                            id: 'custpage_zee_selected',
-                            type: ui.FieldType.TEXT,
-                            label: 'zee'
-                        }).updateDisplayType({
-                            displayType: ui.FieldDisplayType.HIDDEN
-                        }).defaultValue = context.request.parameters.zee;
-                    } else {
-                        form.addField({
-                            id: 'custpage_zee_selected',
-                            type: ui.FieldType.TEXT,
-                            label: 'zee'
-                        }).updateDisplayType({
-                            displayType: ui.FieldDisplayType.HIDDEN
-                        }).defaultValue = 0;
-                    }
-
+                    form.addField({
+                        id: 'custpage_zee_selected',
+                        type: ui.FieldType.TEXT,
+                        label: 'zee'
+                    }).updateDisplayType({
+                        displayType: ui.FieldDisplayType.HIDDEN
+                    });
                 }
-
                 form.addField({
                     id: 'preview_table',
                     type: ui.FieldType.INLINEHTML,
@@ -253,10 +238,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
         function inputFields(b4, g500, kg1, kg3, kg5, test) {
             //Add Break
             //var inlineQty = '<div class="form-group container break_section"><div class="row"></div></div>'
-            log.debug({
-                title: 'b4',
-                details: b4
-            });                
+                          
             //500g AND 5KG Options
             var inlineQty = '<div class="form-group container g500_section">';
             inlineQty += '<div class="row">';

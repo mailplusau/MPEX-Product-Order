@@ -50,68 +50,34 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             if (!isNullorEmpty(currentScript.getValue({fieldId: 'results'}))) {
                 loadOrderRecord();
             }
-            if (role == 1000) {
+            if (role == 1000 && isNullorEmpty(currentScript.getValue({fieldId: 'custpage_zee_selected'}))) {
                 var zee = runtime.getCurrentUser().id;
                 var currentScript = currentRecord.get();            
-                
+                console.log('loading');
                 //prod = 1089, sb = 1140
                 //var url = 'https://1048144-sb3.app.netsuite.com' + "/app/site/hosting/scriptlet.nl?script=1089&deploy=1";
+               
                 var url = baseURL + "/app/site/hosting/scriptlet.nl?script=1089&deploy=1";
                 currentScript.setValue({
                     fieldId: 'custpage_zee_selected',
                     value: zee
                 });  
-                url += "&zee=" + zee + "";
+                url += "&zee=" + Math.floor(zee) + "";
                 window.location.href = url;
-
-                
 
             }
 
-            $( "#500g_text" ).blur(function() {
-                var val = $(this).val();
-                if( val % 10 != 0){
-                    var remainderVal = (val % 10);
-                    var newVal = (val-remainderVal) + 10;
-                    $(this).val(newVal);
-                }
-            });
+            $(document).ready(function(){
+                $("input").blur(function(){
+                    var val = $(this).val();
+                        if( val % 10 != 0){
+                            var remainderVal = (val % 10);
+                            var newVal = (val-remainderVal) + 10;
+                            $(this).val(newVal);
+                        }
+                });
+              });
 
-            $( "#5kg_text" ).blur(function() {
-                var val = $(this).val();
-                if( val % 10 != 0){
-                    var remainderVal = (val % 10);
-                    var newVal = (val-remainderVal) + 10;
-                    $(this).val(newVal);
-                }
-            });
-
-            $( "#1kg_text" ).blur(function() {
-                var val = $(this).val();
-                if( val % 10 != 0){
-                    var remainderVal = (val % 10);
-                    var newVal = (val-remainderVal) + 10;
-                    $(this).val(newVal);
-                }
-            });
-
-            $( "#b4_text" ).blur(function() {
-                var val = $(this).val();
-                if( val % 10 != 0){
-                    var remainderVal = (val % 10);
-                    var newVal = (val-remainderVal) + 10;
-                    $(this).val(newVal);
-                }
-            });
-
-            $( "#3kg_text" ).blur(function() {
-                var val = $(this).val();
-                if( val % 10 != 0){
-                    var remainderVal = (val % 10);
-                    var newVal = (val-remainderVal) + 10;
-                    $(this).val(newVal);
-                }
-            });
             $(document).on('change', '.zee_dropdown', function(event) {
                 var zee = $(this).val();
                 var currentScript = currentRecord.get();            
@@ -124,7 +90,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     fieldId: 'custpage_zee_selected',
                     value: zee
                 }); 
-                url += "&zee=" + zee + "";
+                url += "&zee=" + Math.floor(zee) + "";
                 window.location.href = url;
 
                  
@@ -356,7 +322,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             var zee_id = currentScript.getValue({ fieldId: 'custpage_zee_selected' });
 
             if (!isNullorEmpty(zee_id) && zee_id != 0) {
-                urlVar += "&zee=" + zee_id + "";
+                urlVar += "&zee=" + Math.floor(zee_id) + "";
             }
             console.log(urlVar);
 

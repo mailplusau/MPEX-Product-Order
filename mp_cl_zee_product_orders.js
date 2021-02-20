@@ -30,6 +30,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
 
             var orders_table = $('#product_order-preview').DataTable({
                 data: ordersDataSet,
+                pageLength: 1000,
                 columns: [
                     { title: "Date"},           //0
                     { title: "MP Internal ID"}, //1
@@ -196,7 +197,8 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                         join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
                         label: "Post Code"
                     });
-                    var date = formatDate(new Date());
+                    //var date = formatDate(new Date());
+                    var date = '';
                     var connote = '';
                     console.log('orderResult : ', orderResult);
                     console.log('vals: ', zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip)
@@ -215,7 +217,9 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             datatable.draw();
             saveCsv(ordersDataSet);
             $('[data-toggle="tooltip"]').tooltip();
-
+            $('.total_amount_section').addClass('show');
+            $('.date_from').addClass('show');
+            $('.date_to').addClass('show');
             return true;
         }
 
@@ -224,6 +228,93 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             return true;
         }
         
+        function submitDate() {
+            var date_from = $('#date_from').val();
+            var date_to = $('#date_to').val();
+            
+            if (isNullorEmpty(date_to)) {
+                date_to = new Date();
+                date_to = formatDate(date_to);   
+            }
+            
+            if (!isNullorEmpty(date_from) && !isNullorEmpty(date_to)) {
+                
+
+                date_from = dateISOToNetsuite(date_from);
+                date_to = dateISOToNetsuite(date_to);
+                
+
+                if (date_to < date_from) {
+                    alert('Please enter an end date that is after or equal to the starting date');
+                } else {
+                    dateLoadRecords(date_from, date_to);
+                }
+                
+
+            } else if (isNullorEmpty(date_from)) {
+                alert('Please select a starting date or remove all date filters and submit search.');
+            } else {
+                updateOrdersTable();
+            }
+
+        }
+
+        function dateLoadRecords(date_from, date_to) {
+            $('#result_orders').empty();
+            var ordersDataSet = [];
+
+            var zeeSearch = search.load({
+                id: 'customsearch_mpex_zee_order_search',
+                type: 'customrecord_zee_mpex_order'
+            });
+            
+            zeeSearch.filters.push(search.createFilter({
+                name: 'custrecord_mpex_order_date',
+                operator: search.Operator.ONORAFTER,
+                values: date_from
+            }));
+            zeeSearch.filters.push(search.createFilter({
+                name: 'custrecord_mpex_order_date',
+                operator: search.Operator.ONORBEFORE,
+                values: date_to
+            }));
+
+            var zeeResultSet = zeeSearch.run();
+
+            zeeResultSet.each(function(searchResult) {    
+                var status = searchResult.getValue({ name: 'custrecord_mpex_order_status'});
+                var connote = searchResult.getValue({ name: 'custrecord_mpex_order_connote'});
+                var zeeId =   searchResult.getValue({name: "custrecord_mpex_order_franchisee"});
+
+                //zeeIdSet.push(zeeId);
+                var date = searchResult.getValue({name: "custrecord_mpex_order_date" });
+                var tollAcctNum = searchResult.getValue({name: "custrecord_mpex_order_toll_acc_num" });
+                var accName = 'MailPlus-' + searchResult.getValue({name: "companyname", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
+                var mpex_b4 = searchResult.getValue({name: "custrecord_mpex_order_b4" });
+                var mpex_500g = searchResult.getValue({name: "custrecord_mpex_order_500_satchel" });
+                var mpex_1kg = searchResult.getValue({name: "custrecord_mpex_order_1kg_satchel" });
+                var mpex_3kg = searchResult.getValue({name: "custrecord_mpex_order_3kg_satchel" });
+                var mpex_5kg = searchResult.getValue({name: "custrecord_mpex_order_5kg_satchel" });
+                var total = parseInt(mpex_b4) + parseInt(mpex_500g) + parseInt(mpex_1kg) + parseInt(mpex_3kg) + parseInt(mpex_5kg);
+
+                var dxAddr = searchResult.getValue({name: "custrecord_mpex_order_dx_addr" });
+                var dxExch = searchResult.getValue({name: "custrecord_mpex_order_dx_exch" });
+                var state = searchResult.getValue({name: "custrecord_mpex_order_state" });
+                var zip = searchResult.getValue({name: "custrecord_mpex_order_postcode" });
+                var connote = searchResult.getValue({name: "custrecord_mpex_order_connote" });;
+                ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote]);
+
+                return true;
+            });
+
+            // Update datatable rows.
+            var datatable = $('#product_order-preview').dataTable().api();
+            datatable.clear();
+            datatable.rows.add(ordersDataSet);
+            datatable.draw();
+            //saveCsv(ordersDataSet);
+            $('[data-toggle="tooltip"]').tooltip();
+        }
 
         /**
          * Create the CSV and store it in the hidden field 'custpage_table_csv' as a string.
@@ -260,6 +351,12 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             return responseDate;
         }
 
+        function importConnote() {
+            var url = baseURL + "/app/site/hosting/scriptlet.nl?script=1170&deploy=1";
+            window.open(url, "_blank");
+
+            //window.location.href = url;
+        }
 
         /**
          * Load the string stored in the hidden field 'custpage_table_csv'.
@@ -289,7 +386,23 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
 
         }
         
-        
+        /**
+         * Used to pass the values of `date_from` and `date_to` between the scripts and to Netsuite for the records and the search.
+         * @param   {String} date_iso       "2020-06-01"
+         * @returns {String} date_netsuite  "1/6/2020"
+         */
+        function dateISOToNetsuite(date_iso) {
+            var date_netsuite = '';
+            if (!isNullorEmpty(date_iso)) {
+                var date_utc = new Date(date_iso);
+                // var date_netsuite = nlapiDateToString(date_utc);
+                var date_netsuite = format.format({
+                    value: date_utc,
+                    type: format.Type.DATE
+                });
+            }
+            return date_netsuite;
+        }
         
         function replaceAll(string) {
             return string.split("/").join("-");
@@ -303,7 +416,9 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             pageInit: pageInit,
             saveRecord: saveRecord,
             downloadCsv: downloadCsv,
-            resetZeeOrders: resetZeeOrders
+            resetZeeOrders: resetZeeOrders,
+            submitDate: submitDate,
+            importConnote: importConnote
         };  
     }
 
