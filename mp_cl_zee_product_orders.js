@@ -56,19 +56,25 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
         
             updateOrdersTable();
 
+            var field = 'process';
+            var url = window.location.href;
+            if(url.indexOf('&' + field + '=') != -1) {
+                console.log("EXISTSSS");
+                $('.progress').addClass('show');
+                $('.break_section').addClass('show');
+                setTimeout(function(){ processMove(); }, 100);
+            }
+            
             $(document).ready(function(){
 
                 $("#process_order").click(function(){
                    alert("Please wait while all active orders are processed");
-                   $('.progress').addClass('show');
-                   //setTimeout(function(){ processMove(); }, 100);
+                   
                 });
             });      
         }
 
-        function resetZeeOrders() {
-            var zee = runtime.getCurrentUser().id;
-            var currentScript = currentRecord.get();            
+        function resetZeeOrders() {           
             
             //prod = 1094, sb = ?
             //var url = 'https://1048144-sb3.app.netsuite.com' + "/app/site/hosting/scriptlet.nl?script=1089&deploy=1";
@@ -78,12 +84,24 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
         }
 
         function processMove() {
-            var currentScript = currentRecord.get();
-            var initial_count = currentScript.getValue({fieldId: 'numActive'});
+            var activeSearch = search.load({
+                id: 'customsearch_mpex_zee_order_search',
+                type: 'customrecord_zee_mpex_order'
+            });
+
+            activeSearch.filters.push(search.createFilter({
+                name: 'formulatext',
+                operator: search.Operator.IS,
+                values: 1,
+                formula: '{custrecord_mpex_order_status}'
+            }));
+
+            var initial_count = activeSearch.runPaged().count;
+
             
-            
+
             console.log("initial", initial_count);
-            var totalTime = initial_count*20;
+            var totalTime = initial_count*7;
             console.log("total", totalTime);
             var elem = document.getElementById("progress-records");
             var width = 0;
@@ -91,13 +109,39 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             function frame() {
                 if (width >= 95) {
                     clearInterval(id);
-                    deleteProgress(initial_count);
-                    
+                    checkProgress(initial_count);
                 } else {
                     width++;
                     elem.style.width = width + "%";
                     elem.innerHTML = width + "%";
                 }
+            }
+        }
+
+        function checkProgress() {
+            var activeSearch = search.load({
+                id: 'customsearch_mpex_zee_order_search',
+                type: 'customrecord_zee_mpex_order'
+            });
+
+            activeSearch.filters.push(search.createFilter({
+                name: 'formulatext',
+                operator: search.Operator.IS,
+                values: 1,
+                formula: '{custrecord_mpex_order_status}'
+            }));
+
+            var search_count = activeSearch.runPaged().count;
+
+            if (search_count != 0) {
+                console.log("testing");
+                setTimeout(checkProgress, 500);
+            } else {
+                $(".progress-bar").removeClass("progress-bar-warning");
+                $(".progress-bar").addClass("progress-bar-success");
+                var elem = document.getElementById("progress-records");   
+                elem.style.width = 100 + '%'; 
+                elem.innerHTML = 100 * 1  + '%';
             }
         }
 
@@ -220,6 +264,9 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             $('.total_amount_section').addClass('show');
             $('.date_from').addClass('show');
             $('.date_to').addClass('show');
+            $('.header_section').addClass('show');
+            $('.zee_dropdown_div').addClass('show');
+            //$('.date_to').addClass('show');
             return true;
         }
 
@@ -231,35 +278,46 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
         function submitDate() {
             var date_from = $('#date_from').val();
             var date_to = $('#date_to').val();
-            
-            if (isNullorEmpty(date_to)) {
-                date_to = new Date();
-                date_to = formatDate(date_to);   
-            }
-            
-            if (!isNullorEmpty(date_from) && !isNullorEmpty(date_to)) {
-                
+            var zee = document.getElementById("zee_dropdown").value;
 
+            if (isNullorEmpty(zee)) {
+                console.log("ITS NULLLL");
+            }
+            console.log("from", date_from);
+            console.log("to", date_to);
+            console.log(document.getElementById("zee_dropdown").value);
+
+            if (!isNullorEmpty(date_from)) {
                 date_from = dateISOToNetsuite(date_from);
-                date_to = dateISOToNetsuite(date_to);
-                
+
+                if (isNullorEmpty(date_to)) {
+                    date_to = new Date();
+                    date_to = dateISOToNetsuite(date_to);
+                } else {
+                    date_to = dateISOToNetsuite(date_to);
+
+                }
+                console.log(date_from);
+                console.log(date_to);
 
                 if (date_to < date_from) {
                     alert('Please enter an end date that is after or equal to the starting date');
                 } else {
-                    dateLoadRecords(date_from, date_to);
+                    dateLoadRecords(date_from, date_to, zee);
                 }
                 
-
-            } else if (isNullorEmpty(date_from)) {
+            } else if (isNullorEmpty(date_from) && !isNullorEmpty(date_to)) {
                 alert('Please select a starting date or remove all date filters and submit search.');
-            } else {
+            } else if (!isNullorEmpty(zee)) {
+                dateLoadRecords('', '', zee);
+            } 
+            else {
                 updateOrdersTable();
             }
 
         }
 
-        function dateLoadRecords(date_from, date_to) {
+        function dateLoadRecords(date_from, date_to, zee) {
             $('#result_orders').empty();
             var ordersDataSet = [];
 
@@ -268,17 +326,26 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 type: 'customrecord_zee_mpex_order'
             });
             
-            zeeSearch.filters.push(search.createFilter({
-                name: 'custrecord_mpex_order_date',
-                operator: search.Operator.ONORAFTER,
-                values: date_from
-            }));
-            zeeSearch.filters.push(search.createFilter({
-                name: 'custrecord_mpex_order_date',
-                operator: search.Operator.ONORBEFORE,
-                values: date_to
-            }));
-
+            if (!isNullorEmpty(date_from) && !isNullorEmpty(date_to)) {
+                zeeSearch.filters.push(search.createFilter({
+                    name: 'custrecord_mpex_order_date',
+                    operator: search.Operator.ONORAFTER,
+                    values: date_from
+                }));
+                zeeSearch.filters.push(search.createFilter({
+                    name: 'custrecord_mpex_order_date',
+                    operator: search.Operator.ONORBEFORE,
+                    values: date_to
+                }));
+            }
+            
+            if (!isNullorEmpty(zee)) {
+                zeeSearch.filters.push(search.createFilter({
+                    name: 'custrecord_mpex_order_franchisee',
+                    operator: search.Operator.IS,
+                    values: zee
+                }));
+            }
             var zeeResultSet = zeeSearch.run();
 
             zeeResultSet.each(function(searchResult) {    
@@ -355,7 +422,6 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             var url = baseURL + "/app/site/hosting/scriptlet.nl?script=1170&deploy=1";
             window.open(url, "_blank");
 
-            //window.location.href = url;
         }
 
         /**

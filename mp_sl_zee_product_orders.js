@@ -5,9 +5,9 @@
 
  */
 
-define(['N/ui/serverWidget', 'N/runtime', 'N/log', 'N/task'], 
-    function(ui, runtime, log, task) {
-        var role = runtime.getCurrentUser().role;
+define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/http', 'N/log', 'N/redirect', 'N/format', 'N/task'], 
+function(ui, email, runtime, search, record, http, log, redirect, format, task) {
+    var role = runtime.getCurrentUser().role;
         function onRequest(context) {  
             
             if (context.request.method === 'GET') {
@@ -37,8 +37,12 @@ define(['N/ui/serverWidget', 'N/runtime', 'N/log', 'N/task'],
                     title: 'MPEX Product Orders (ALL ZEEs)'
                 });
                 inlineHtml += '<br></br>';
-                inlineHtml += progressBar();
+                inlineHtml += franchiseeDropdownSection();
                 inlineHtml += dateFilterSection();
+                inlineHtml += '<br></br>';
+
+                inlineHtml += '<br></br>';
+                inlineHtml += progressBar();
 
                 // Open Invoices Datatable
                 inlineHtml += '<div class="form-group mpex_orders mpex_orders_table">';
@@ -60,13 +64,13 @@ define(['N/ui/serverWidget', 'N/runtime', 'N/log', 'N/task'],
                 
                 form.addButton({
                     id : 'process_order',
-                    label : 'PROCESS ORDERS',
+                    label : 'Process Orders',
                     functionName : 'resetZeeOrders()'
                 });
                 
                 form.addButton({
                     id : 'submit_date',
-                    label : 'ADD DATE FILTER',
+                    label : 'Add Filters',
                     functionName : 'submitDate()'
                 });
                 
@@ -113,7 +117,9 @@ define(['N/ui/serverWidget', 'N/runtime', 'N/log', 'N/task'],
          * @return  {String}    inlineQty : The inline HTML string of the progress bar.
          */
         function progressBar() {
-            var inlineQty = '<div class="progress container hide">';
+            var inlineQty = '<div class="form-group container break_section hide">';
+            inlineQty += '</div>';
+            inlineQty += '<div class="progress hide">';
             inlineQty += '<div class="progress-bar progress-bar-striped progress-bar-warning" id="progress-records" role="progressbar" aria-valuenow="0" style="width:0%">0%</div>';
             inlineQty += '</div>';
             
@@ -166,6 +172,56 @@ define(['N/ui/serverWidget', 'N/runtime', 'N/log', 'N/task'],
             inlineQty += '<div class="input-group">';
             inlineQty += '<span class="input-group-addon" id="date_to_text">To</span>';
             inlineQty += '<input id="date_to" class="form-control date_to" type="date">';
+            inlineQty += '</div></div></div></div>';
+
+            return inlineQty;
+        }
+
+                /**
+         * The Franchisee dropdown list.
+         * @param   {Number}    zee_id
+         * @return  {String}    `inlineQty`
+         */
+        function franchiseeDropdownSection() {
+
+            var inlineQty = '<div class="form-group container header_section hide">';
+            inlineQty += '<div class="row">';
+            inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">FRANCHISEE FILTER</span></h4></div>';
+            inlineQty += '</div>';
+            inlineQty += '</div>';
+            inlineQty += '<div class="form-group container zee_dropdown_section >';
+
+            inlineQty += '<div class="row">';
+            // Franchisee dropdown field
+            inlineQty += '<div class="col-xs-18 zee_dropdown_div hide">';
+            inlineQty += '<div class="input-group">';
+            inlineQty += '<span class="input-group-addon" id="zee_dropdown_text">FRANCHISEE</span>';
+            inlineQty += '<select id="zee_dropdown" class="form-control zee_dropdown" required>';
+            inlineQty += '<option></option>';
+
+            // Load the franchisees options
+            var zeesSearch = search.load({
+                id: 'customsearch_job_inv_process_zee',
+                type: search.Type.PARTNER
+            });
+
+            var zeesSearchResults = zeesSearch.run();
+            zeesSearchResults.each(function (zeesSearchResult) {
+                var opt_zee_id = zeesSearchResult.getValue('internalid');
+                    var opt_zee_name = zeesSearchResult.getValue('companyname');
+                    
+                var selected_option = '';
+                if (role == 1000) {
+                    zee_id = runtime.getCurrentUser().id; //Get Franchisee ID-- REMOVE TO TEST
+                    selected_option = (opt_zee_id == zee_id) ? 'selected' : '';
+                }
+                
+                
+                inlineQty += '<option value="' + opt_zee_id + '" ' + selected_option + '>' + opt_zee_name + '</option>';
+                return true;
+            });
+
+            inlineQty += '</select>';
             inlineQty += '</div></div></div></div>';
 
             return inlineQty;
