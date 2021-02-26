@@ -9,8 +9,8 @@
  */
 
 
-define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/log', 'N/redirect', 'N/format', 'N/task'], 
-function(ui, email, runtime, search, record, log, redirect, format, task) {
+define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/log', 'N/redirect', 'N/format', 'N/task', 'N/file'], 
+function(ui, email, runtime, search, record, log, redirect, format, task, file) {
     var baseURL = 'https://1048144.app.netsuite.com';
     if (runtime.EnvType == "SANDBOX") {
         baseURL = 'https://1048144-sb3.app.netsuite.com';
@@ -70,7 +70,7 @@ function(ui, email, runtime, search, record, log, redirect, format, task) {
                 label: 'date_from'
             }).updateDisplayType({
                 displayType: ui.FieldDisplayType.HIDDEN
-            }).defaultValue = new Date();
+            }).defaultValue;
 
             form.addField({
                 id: 'custpage_date_to',
@@ -78,7 +78,7 @@ function(ui, email, runtime, search, record, log, redirect, format, task) {
                 label: 'date_to'
             }).updateDisplayType({
                 displayType: ui.FieldDisplayType.HIDDEN
-            }).defaultValue = new Date();
+            }).defaultValue;
 
             form.addField({
                 id: 'custpage_test',
@@ -87,6 +87,14 @@ function(ui, email, runtime, search, record, log, redirect, format, task) {
             }).updateDisplayType({
                 displayType: ui.FieldDisplayType.HIDDEN
             }).defaultValue;
+
+            form.addField({
+                id: 'custpage_scheduled',
+                type: ui.FieldType.TEXT,
+                label: 'scheduled'
+            }).updateDisplayType({
+                displayType: ui.FieldDisplayType.HIDDEN
+            });
 
             form.addField({
                 id: 'preview_table',
@@ -98,6 +106,16 @@ function(ui, email, runtime, search, record, log, redirect, format, task) {
                 breakType: ui.FieldBreakType.STARTROW
             }).defaultValue = inlineHtml;
             
+            // form.addField({
+            //     id: 'preview_table',
+            //     type: ui.FieldType.INLINEHTML,
+            //     label: 'preview_table'
+            // }).updateLayoutType({
+            //     layoutType: ui.FieldLayoutType.OUTSIDEBELOW
+            // }).updateBreakType({
+            //     breakType: ui.FieldBreakType.STARTROW
+            // }).defaultValue = inlineHtml;
+
             form.clientScriptFileId = 4686408; //SB cl_id =, PROD cl_id = 4686408
             context.response.writePage(form);
 
@@ -106,8 +124,11 @@ function(ui, email, runtime, search, record, log, redirect, format, task) {
             var date_from = context.request.parameters.custpage_date_from;
             var date_to = context.request.parameters.custpage_date_to;
 
-            date_from = formatDate(date_from);
-            date_to = formatDate(date_to);
+            if (!isNullorEmpty(date_from) && !isNullorEmpty(date_to)) {
+                date_from = formatDate(date_from);
+                date_to = formatDate(date_to);
+            }
+            
 
             log.debug({
                 title: 'date_from',
@@ -153,6 +174,30 @@ function(ui, email, runtime, search, record, log, redirect, format, task) {
             };
             var ss_id = scriptTask.submit();
             
+            var file1 = file.load({
+                id: f_id
+            });
+
+            var iterator = file1.lines.iterator();
+
+            // skip first line (header)
+            iterator.each(function (line) { 
+                log.debug({ title: 'line', details: line });
+                return false;
+            });
+
+            var numLines = 0;
+            var zeeArr = [];
+            iterator.each(function (line) {
+                var csv_values = line.value.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                var zee_id = csv_values[1];
+                if (zeeArr.indexOf(zee_id) == -1) {
+                    zeeArr.push(zee_id);
+                }
+                numLines++;
+                return true;
+            });
+
             // Load jQuery
             var inlineHtml = '<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>';
             // Load Tooltip
@@ -178,6 +223,8 @@ function(ui, email, runtime, search, record, log, redirect, format, task) {
             var form = ui.createForm({
                 title: 'MPEX Product Orders (ALL ZEEs)'
             });
+
+            
             inlineHtml += '<br></br>';
             inlineHtml += progressBar();
             inlineHtml += dateFilterSection();
@@ -201,20 +248,45 @@ function(ui, email, runtime, search, record, log, redirect, format, task) {
             }); 
 
             form.addField({
-                id: 'date_from',
+                id: 'custpage_date_from',
                 type: ui.FieldType.DATE,
                 label: 'date_from'
             }).updateDisplayType({
                 displayType: ui.FieldDisplayType.HIDDEN
-            });
+            }).defaultValue = date_from;
 
             form.addField({
-                id: 'date_to',
+                id: 'custpage_scheduled',
+                type: ui.FieldType.TEXT,
+                label: 'scheduled'
+            }).updateDisplayType({
+                displayType: ui.FieldDisplayType.HIDDEN
+            }).defaultValue = 2;
+
+            form.addField({
+                id: 'zee_array',
+                type: ui.FieldType.TEXT,
+                label: 'zee_array'
+            }).updateDisplayType({
+                displayType: ui.FieldDisplayType.HIDDEN
+            }).defaultValue = zeeArr;
+
+
+            form.addField({
+                id: 'excel_lines',
+                type: ui.FieldType.TEXT,
+                label: 'excel_lines'
+            }).updateDisplayType({
+                displayType: ui.FieldDisplayType.HIDDEN
+            }).defaultValue = numLines;
+
+            form.addField({
+                id: 'custpage_date_to',
                 type: ui.FieldType.DATE,
                 label: 'date_to'
             }).updateDisplayType({
                 displayType: ui.FieldDisplayType.HIDDEN
-            });
+            }).defaultValue = date_to;
 
             form.addField({
                 id: 'preview_table',
@@ -241,11 +313,11 @@ function(ui, email, runtime, search, record, log, redirect, format, task) {
     function dateFilterSection() {
         var inlineQty = '<div class="form-group container total_amount_section">';
         inlineQty += '<div class="row">';
-        inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">DATE FILTER</span></h4></div>';
+        inlineQty += '<div class="col-xs-18 heading1"><h4><span class="label label-default col-xs-12">DATE FILTER</span></h4></div>';
         inlineQty += '</div>';
         inlineQty += '</div>';
 
-        inlineQty += '<div class="form-group container date_filter_section">';
+        inlineQty += '<div class="form-group date_filter_section">';
         inlineQty += '<div class="row">';
         // Date from field
         inlineQty += '<div class="col-xs-6 date_from">';
@@ -270,7 +342,7 @@ function(ui, email, runtime, search, record, log, redirect, format, task) {
      * @return  {String}    inlineQty : The inline HTML string of the progress bar.
      */
     function progressBar() {
-        var inlineQty = '<div class="progress container hide">';
+        var inlineQty = '<div class="progress ">';
         inlineQty += '<div class="progress-bar progress-bar-striped progress-bar-warning" id="progress-records" role="progressbar" aria-valuenow="0" style="width:0%">0%</div>';
         inlineQty += '</div>';
         

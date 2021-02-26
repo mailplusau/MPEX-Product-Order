@@ -46,7 +46,8 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     { title: "DX Exchange" },   //11
                     { title: "State" },         //12
                     { title: "Postcode" },      //13
-                    { title: "Connote #"}       //14
+                    { title: "Connote #"},       //14
+                    { title: "Status"}       //15
                 ],
                 order: [[3, "asc"]],
                 
@@ -142,6 +143,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 var elem = document.getElementById("progress-records");   
                 elem.style.width = 100 + '%'; 
                 elem.innerHTML = 100 * 1  + '%';
+                updateOrdersTable();
             }
         }
 
@@ -152,6 +154,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
 
             var zeeIdSet = [];
             var ordersDataSet = [];
+            var ordersDataSet2 = [];
 
             var zeeSearch = search.load({
                 id: 'customsearch_mpex_zee_order_search',
@@ -188,7 +191,8 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     var state = searchResult.getValue({name: "custrecord_mpex_order_state" });
                     var zip = searchResult.getValue({name: "custrecord_mpex_order_postcode" });
                     var connote = '';
-                    ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote]);
+                    ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote, status]);
+                    ordersDataSet2.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote]);
 
                 }
                 return true;
@@ -244,9 +248,12 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     //var date = formatDate(new Date());
                     var date = '';
                     var connote = '';
+                    var status = '';
                     console.log('orderResult : ', orderResult);
                     console.log('vals: ', zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip)
-                    ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote]);
+                    ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote, status]);
+                    ordersDataSet2.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote]);
+
                 }
                 
                 
@@ -259,13 +266,15 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             datatable.clear();
             datatable.rows.add(ordersDataSet);
             datatable.draw();
-            saveCsv(ordersDataSet);
+            saveCsv(ordersDataSet2);
             $('[data-toggle="tooltip"]').tooltip();
             $('.total_amount_section').addClass('show');
             $('.date_from').addClass('show');
             $('.date_to').addClass('show');
             $('.header_section').addClass('show');
             $('.zee_dropdown_div').addClass('show');
+            $('.header_section1').addClass('show');
+            $('.status_dropdown_div').addClass('show');
             //$('.date_to').addClass('show');
             return true;
         }
@@ -279,13 +288,9 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             var date_from = $('#date_from').val();
             var date_to = $('#date_to').val();
             var zee = document.getElementById("zee_dropdown").value;
-
-            if (isNullorEmpty(zee)) {
-                console.log("ITS NULLLL");
-            }
-            console.log("from", date_from);
-            console.log("to", date_to);
-            console.log(document.getElementById("zee_dropdown").value);
+            var status = document.getElementById("status_dropdown").value;
+            console.log(status);
+            
 
             if (!isNullorEmpty(date_from)) {
                 date_from = dateISOToNetsuite(date_from);
@@ -303,21 +308,22 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 if (date_to < date_from) {
                     alert('Please enter an end date that is after or equal to the starting date');
                 } else {
-                    dateLoadRecords(date_from, date_to, zee);
+                    dateLoadRecords(date_from, date_to, zee, status);
                 }
                 
             } else if (isNullorEmpty(date_from) && !isNullorEmpty(date_to)) {
                 alert('Please select a starting date or remove all date filters and submit search.');
             } else if (!isNullorEmpty(zee)) {
-                dateLoadRecords('', '', zee);
-            } 
-            else {
+                dateLoadRecords('', '', zee, status);
+            } else if (!isNullorEmpty(status)) {
+                dateLoadRecords('', '', zee, status);
+            } else {
                 updateOrdersTable();
             }
 
         }
 
-        function dateLoadRecords(date_from, date_to, zee) {
+        function dateLoadRecords(date_from, date_to, zee, status) {
             $('#result_orders').empty();
             var ordersDataSet = [];
 
@@ -346,6 +352,15 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     values: zee
                 }));
             }
+
+            if (!isNullorEmpty(status)) {
+                zeeSearch.filters.push(search.createFilter({
+                    name: 'formulatext',
+                    operator: search.Operator.IS,
+                    values: status,
+                    formula: '{custrecord_mpex_order_status}'
+                }));
+            }
             var zeeResultSet = zeeSearch.run();
 
             zeeResultSet.each(function(searchResult) {    
@@ -369,7 +384,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 var state = searchResult.getValue({name: "custrecord_mpex_order_state" });
                 var zip = searchResult.getValue({name: "custrecord_mpex_order_postcode" });
                 var connote = searchResult.getValue({name: "custrecord_mpex_order_connote" });;
-                ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote]);
+                ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote, status]);
 
                 return true;
             });
@@ -393,6 +408,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             headers = headers.join(';'); // .join(', ')
 
             var csv = sep + "\n" + headers + "\n";
+            
             
             ordersDataSet.forEach(function(row) {
                 row = row.join(';');

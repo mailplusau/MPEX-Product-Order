@@ -35,8 +35,9 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
 
             log.debug({
                 title: 'start',
-                details: 'start'
+                details: new Date()
             });
+            
             var file_id = runtime.getCurrentScript().getParameter({ name: 'custscript_import_connote_file_id' });
             var index = runtime.getCurrentScript().getParameter({ name: 'custscript_import_connote_index' });
             var date_from = runtime.getCurrentScript().getParameter({ name: 'custscript_import_connote_date_from' });
@@ -75,7 +76,7 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
 
             var counter = 0;
             iterator.each(function (line) {
-                if (index != index) {
+                if (counter != index) {
                     counter++;
                     return true;
                 }
@@ -88,18 +89,23 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
                 var connote = csv_values[14];
 
                 addConnote(zee_id, toll_acc, total, postcode, connote, counter, file_id, date_from, date_to);
+                index++;
                 counter++;
                 return true;
             });
             
             log.debug({
                 title: 'complete',
-                details: 'complete'
+                details: new Date()
             });
             
         }
 
         function addConnote(zee_id, toll_acc, total, postcode, connote, counter, f_id, date_from, date_to) {
+            log.debug({
+                title: 'starttt',
+                details: new Date()
+            });
             var zeeSearch = search.load({
                 id: 'customsearch_mpex_zee_order_search',
                 type: 'customrecord_zee_mpex_order'
@@ -116,6 +122,17 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
                 values: parseInt(zee_id)
             }));
 
+            zeeSearch.filters.push(search.createFilter({
+                name: 'formulatext',
+                operator: search.Operator.IS,
+                values: 2,
+                formula: '{custrecord_mpex_order_status}'
+            }));
+
+            log.debug({
+                title: date_from,
+                details: date_to
+            })
             if (!isNullorEmpty(date_from) && !isNullorEmpty(date_to)) {
                 zeeSearch.filters.push(search.createFilter({
                     name: 'custrecord_mpex_order_date',
@@ -130,12 +147,28 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
             } else {
                 //Get today's date using the JavaScript Date object.
                 var today = new Date();
-
+                today.setDate(today.getDate() + 1);
                 //Change it so that it is 7 days in the past.
-                var weekAgo = today.getDate() - 7;
+                //var weekAgo = today.getDate() - 6;
+                var weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 6);
+
                 today = formatDate(today);
                 weekAgo = formatDate(weekAgo);
-
+                log.debug({
+                    title: today,
+                    details: weekAgo
+                });
+                zeeSearch.filters.push(search.createFilter({
+                    name: 'custrecord_mpex_order_date',
+                    operator: search.Operator.ONORAFTER,
+                    values: weekAgo
+                }));
+                zeeSearch.filters.push(search.createFilter({
+                    name: 'custrecord_mpex_order_date',
+                    operator: search.Operator.ONORBEFORE,
+                    values: today
+                }));
             }
             var zeeResultSet = zeeSearch.run();
 
@@ -146,10 +179,36 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
                 var status = searchResult.getValue({ name: 'custrecord_mpex_order_status'}); 
                 var connoteSearch = searchResult.getValue({ name: 'custrecord_mpex_order_connote'}); 
                 var toll = searchResult.getValue({ name: 'custrecord_mpex_order_toll_acc_num'}); 
-
-                if (status != 2 || toll.indexOf(toll_acc) == -1 || zeeId.indexOf(zee_id) == -1 || !isNullorEmpty(connoteSearch)) {
+                log.debug({
+                    title: 'in',
+                    details: 'in'
+                });
+                log.debug({
+                    title: 'toll',
+                    details: toll
+                });
+                log.debug({
+                    title: 'toll_acc',
+                    details: toll_acc
+                });
+                log.debug({
+                    title: 'zeeId',
+                    details: zeeId
+                });
+                log.debug({
+                    title: 'zee_id',
+                    details: zee_id
+                });
+                log.debug({
+                    title: 'connoteSearch',
+                    details: connoteSearch
+                });
+                if (toll.indexOf(toll_acc) == -1 || zeeId.indexOf(zee_id) == -1 || !isNullorEmpty(connoteSearch)) {
                     return true;
                 }
+
+                
+
                 log.debug({
                     title: 'status',
                     details: status
@@ -196,12 +255,14 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
                 return true;
             });
 
+            log.debug({
+                title: 'enddd',
+                details: new Date()
+            });
         }
 
         function formatDate(testDate){
-            console.log('testDate: '+testDate);
             var responseDate=format.format({value:testDate,type:format.Type.DATE});
-            console.log('responseDate: '+responseDate);
             return responseDate;
         }
 

@@ -39,6 +39,7 @@ function(ui, email, runtime, search, record, http, log, redirect, format, task) 
                 inlineHtml += '<br></br>';
                 inlineHtml += franchiseeDropdownSection();
                 inlineHtml += dateFilterSection();
+                inlineHtml += statusDropdownSection();               
                 inlineHtml += '<br></br>';
 
                 inlineHtml += '<br></br>';
@@ -220,6 +221,37 @@ function(ui, email, runtime, search, record, http, log, redirect, format, task) 
                 inlineQty += '<option value="' + opt_zee_id + '" ' + selected_option + '>' + opt_zee_name + '</option>';
                 return true;
             });
+
+            inlineQty += '</select>';
+            inlineQty += '</div></div></div></div>';
+
+            return inlineQty;
+        }
+
+        /**
+         * The Franchisee dropdown list.
+         * @param   {Number}    zee_id
+         * @return  {String}    `inlineQty`
+         */
+        function statusDropdownSection() {
+
+            var inlineQty = '<div class="form-group container header_section1 hide">';
+            inlineQty += '<div class="row">';
+            inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">STATUS FILTER</span></h4></div>';
+            inlineQty += '</div>';
+            inlineQty += '</div>';
+            inlineQty += '<div class="form-group container status_dropdown_section >';
+
+            inlineQty += '<div class="row">';
+            // Franchisee dropdown field
+            inlineQty += '<div class="col-xs-18 status_dropdown_div hide">';
+            inlineQty += '<div class="input-group">';
+            inlineQty += '<span class="input-group-addon" id="zee_dropdown_text">STATUS</span>';
+            inlineQty += '<select id="status_dropdown" class="form-control zee_dropdown" required>';
+            inlineQty += '<option></option>';
+            inlineQty += '<option value="' + 1 + '" ' + '' + '>' + 'Active' + '</option>';
+            inlineQty += '<option value="' + 2 + '" ' + '' + '>' + 'Processed' + '</option>';
+            inlineQty += '<option value="' + 3 + '" ' + '' + '>' + 'Complete' + '</option>';
 
             inlineQty += '</select>';
             inlineQty += '</div></div></div></div>';
