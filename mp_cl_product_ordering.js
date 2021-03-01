@@ -194,6 +194,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
        
             var zee_id = currentScript.getValue({ fieldId: 'custpage_zee_selected' });
             console.log(zee_id);
+            zee_id = parseInt(zee_id);
 
             if (window.confirm('Are you sure you want to submit your order?')){
                 var b4 = checkNull($('#b4_text').val());
@@ -201,97 +202,14 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 var kg1 = checkNull($('#1kg_text').val());
                 var kg3 = checkNull($('#3kg_text').val());
                 var kg5 = checkNull($('#5kg_text').val());
-                var total = b4 + g500 + kg1 + kg3 + kg5;
-
-                var activeOrder = checkConnote(zee_id);
-                console.log(activeOrder);
-                //Load active order if it exists
-                if (activeOrder != 0) {
-                    var mpexOrderRec = record.load({
-                        type: 'customrecord_zee_mpex_order',
-                        id: activeOrder
-                    });
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_b4', value: b4});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_500_satchel', value: g500});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_1kg_satchel', value: kg1});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_3kg_satchel', value: kg3});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_5kg_satchel', value: kg5});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_total', value: total});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_date', value: new Date()});
-
-                    mpexOrderRec.save({
-                        enableSourcing: true,
-                        ignoreMandatoryFields: true
-                    });
-                } else {
-                    var zeeSearch = search.load({
-                        id: 'customsearch_zee_mpex_product_order',
-                        type: search.Type.PARTNER
-                    });
-                    
-                    zeeSearch.filters.push(search.createFilter({
-                        name: 'internalid',
-                        operator: search.Operator.IS,
-                        values: zee_id
-                    }));
-    
-                    var zeeResultSet = zeeSearch.run();
-                    
-                    var tollAcctNum; var dxAddr; var dxExch; var state; var zip;
-                    zeeResultSet.each(function(searchResult) {
-                        tollAcctNum = searchResult.getValue('custentity_toll_acc_number');
-                        dxAddr = searchResult.getValue({
-                            name: "custrecord_ap_lodgement_addr2",
-                            join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
-                            label: "Address 2"
-                         });
-                        
-                        dxExch = searchResult.getValue({
-                            name: "custrecord_ap_lodgement_suburb",
-                            join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
-                            label: "Suburb"
-                        });
-    
-                        state = searchResult.getText({
-                            name: "custrecord_ap_lodgement_site_state",
-                            join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
-                            label: "State"
-                        });
-                        zip = searchResult.getValue({
-                            name: "custrecord_ap_lodgement_postcode",
-                            join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
-                            label: "Post Code"
-                        });
-    
-                    });
-    
-                    var mpexOrderRec = record.create({
-                        type: 'customrecord_zee_mpex_order',
-                        isDynamic: true,
-                    });
-                    
-                    //1 = ACTIVE, 2 = PROCESSING, 3 = COMPLETED (if connote)
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_status', value: 1});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_franchisee', value: zee_id});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_b4', value: b4});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_500_satchel', value: g500});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_1kg_satchel', value: kg1});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_3kg_satchel', value: kg3});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_5kg_satchel', value: kg5});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_total', value: total});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_date', value: new Date()});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_mp_id', value: zee_id});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_toll_acc_num', value: tollAcctNum});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_dx_addr', value: dxAddr});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_dx_exch', value: dxExch});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_state', value: state});
-                    mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_postcode', value: zip});
-    
-                    mpexOrderRec.save({
-                        enableSourcing: true,
-                        ignoreMandatoryFields: true
-                    });
-                }
+                
+                console.log(b4);
+                currentScript.setValue({ fieldId: 'custpage_b4', value: b4 });
+                currentScript.setValue({ fieldId: 'custpage_g500', value: g500 });
+                currentScript.setValue({ fieldId: 'custpage_kg1', value: kg1});
+                currentScript.setValue({ fieldId: 'custpage_kg3', value: kg3});
+                currentScript.setValue({ fieldId: 'custpage_kg5', value: kg5});
+                
                 
 
             } else {

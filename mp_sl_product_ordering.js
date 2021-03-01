@@ -134,6 +134,46 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                     displayType: ui.FieldDisplayType.HIDDEN
                 });
 
+                form.addField({
+                    id: 'custpage_b4',
+                    type: ui.FieldType.TEXT,
+                    label: 'b4'
+                }).updateDisplayType({
+                    displayType: ui.FieldDisplayType.HIDDEN
+                });
+
+                form.addField({
+                    id: 'custpage_g500',
+                    type: ui.FieldType.TEXT,
+                    label: 'g500'
+                }).updateDisplayType({
+                    displayType: ui.FieldDisplayType.HIDDEN
+                });
+
+                form.addField({
+                    id: 'custpage_kg1',
+                    type: ui.FieldType.TEXT,
+                    label: 'kg1'
+                }).updateDisplayType({
+                    displayType: ui.FieldDisplayType.HIDDEN
+                });
+
+                form.addField({
+                    id: 'custpage_kg3',
+                    type: ui.FieldType.TEXT,
+                    label: 'kg3'
+                }).updateDisplayType({
+                    displayType: ui.FieldDisplayType.HIDDEN
+                });
+
+                form.addField({
+                    id: 'custpage_kg5',
+                    type: ui.FieldType.TEXT,
+                    label: 'kg5'
+                }).updateDisplayType({
+                    displayType: ui.FieldDisplayType.HIDDEN
+                });
+
                 form.addSubmitButton({
                     label : 'SUBMIT ORDER'
                 });
@@ -143,6 +183,14 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                 context.response.writePage(form);
 
             } else {
+                var zee_id = context.request.parameters.custpage_zee_selected;
+                var b4 = context.request.parameters.custpage_b4;
+                var g500 = context.request.parameters.custpage_g500;
+                var kg1 = context.request.parameters.custpage_kg1;
+                var kg3 = context.request.parameters.custpage_kg3;
+                var kg5 = context.request.parameters.custpage_kg5;
+
+                createCustomRecord(zee_id, b4, g500, kg1, kg3, kg5);
                 var form = ui.createForm({
                     title: 'MPEX Product Order Confirmation'
                 });
@@ -219,6 +267,131 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
 
         }
 
+        function createCustomRecord(zee_id, b4, g500, kg1, kg3, kg5) {
+            var activeOrder = checkConnote(zee_id);
+            //Load active order if it exists
+            if (activeOrder != 0) {
+                var mpexOrderRec = record.load({
+                    type: 'customrecord_zee_mpex_order',
+                    id: activeOrder
+                });
+                //var date = new Date();
+                date.setDate(date.getDate() + 1);
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_b4', value: b4});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_500_satchel', value: g500});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_1kg_satchel', value: kg1});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_3kg_satchel', value: kg3});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_5kg_satchel', value: kg5});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_total', value: b4 + g500 + kg1 + kg3 + kg5});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_date', value: date});
+
+                mpexOrderRec.save({
+                    enableSourcing: true,
+                    ignoreMandatoryFields: true
+                });
+            } else {
+                var zeeSearch = search.load({
+                    id: 'customsearch_zee_mpex_product_order',
+                    type: search.Type.PARTNER
+                });
+                
+                zeeSearch.filters.push(search.createFilter({
+                    name: 'internalid',
+                    operator: search.Operator.IS,
+                    values: zee_id
+                }));
+
+                var zeeResultSet = zeeSearch.run();
+                
+                var tollAcctNum; var dxAddr; var dxExch; var state; var zip;
+                zeeResultSet.each(function(searchResult) {
+                    tollAcctNum = searchResult.getValue('custentity_toll_acc_number');
+                    dxAddr = searchResult.getValue({
+                        name: "custrecord_ap_lodgement_addr2",
+                        join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
+                        label: "Address 2"
+                        });
+                    
+                    dxExch = searchResult.getValue({
+                        name: "custrecord_ap_lodgement_suburb",
+                        join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
+                        label: "Suburb"
+                    });
+
+                    state = searchResult.getText({
+                        name: "custrecord_ap_lodgement_site_state",
+                        join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
+                        label: "State"
+                    });
+                    zip = searchResult.getValue({
+                        name: "custrecord_ap_lodgement_postcode",
+                        join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
+                        label: "Post Code"
+                    });
+
+                });
+
+                var mpexOrderRec = record.create({
+                    type: 'customrecord_zee_mpex_order',
+                    isDynamic: true,
+                });
+                
+                var date = new Date();
+                //date.setDate(date.getDate() + 1);
+                //1 = ACTIVE, 2 = PROCESSING, 3 = COMPLETED (if connote)
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_status', value: 1});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_franchisee', value: zee_id});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_b4', value: b4});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_500_satchel', value: g500});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_1kg_satchel', value: kg1});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_3kg_satchel', value: kg3});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_5kg_satchel', value: kg5});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_total', value: b4 + g500 + kg1 + kg3 + kg5});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_date', value: date });
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_mp_id', value: zee_id});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_toll_acc_num', value: tollAcctNum});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_dx_addr', value: dxAddr});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_dx_exch', value: dxExch});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_state', value: state});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_postcode', value: zip});
+
+                mpexOrderRec.save({
+                    enableSourcing: true,
+                    ignoreMandatoryFields: true
+                });
+            }
+        }
+        function checkConnote(zee) {
+            var zeeSearch = search.load({
+                id: 'customsearch_mpex_zee_order_search',
+                type: 'customrecord_zee_mpex_order'
+            });
+            
+            zeeSearch.filters.push(search.createFilter({
+                name: 'custrecord_mpex_order_franchisee',
+                operator: search.Operator.IS,
+                values: zee
+            }));
+
+            var zeeResultSet = zeeSearch.run();
+            var activeOrder = 0;
+            zeeResultSet.each(function(searchResult) {
+                var connote = searchResult.getValue({ name: 'custrecord_mpex_order_connote'});
+                var status = searchResult.getValue({ name: 'custrecord_mpex_order_status'});
+                if (status == 1 && isNullorEmpty(connote)) {
+                    log.debug({
+                        title: 'INSIDE CONNOTEEE',
+                        details: 'INSIDE CONNOTEEE'
+                    });
+                    activeOrder = searchResult.getValue({ name: 'id'});
+                    return false;
+                }
+                return true;
+            });
+
+            return activeOrder;
+        }
+
         function instructionsBox() {
             var inlineQty = '<br></br>';
             //Important Instructions box
@@ -286,46 +459,6 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
         }
 
         
-        function resultsTable(zee) {
-            var inlineQty = '<style>';
-            // Headers cells
-            inlineQty += '#mpex_order_table th {color: white; font-weight: bold; background-color: rgba(84, 109, 145, 1);}';
-
-            // Links
-            inlineQty += '#mpex_order_table a {color: #24385b;}';
-            inlineQty += '#mpex_order_table tr:nth-child(even) { background-color: #dddddd; }';
-            inlineQty += '#mpex_order_table tr:nth-child(2){ background:#90ee90; }';
-            
-            inlineQty += '</style>';
-            inlineQty += '<div class="table-responsive">';
-
-            inlineQty += '<table class="table" id="mpex_order_table">';
-            inlineQty += '<thead>';
-            inlineQty += '<tr>';
-            inlineQty += '<th scope="col" id="table_title">Order Date</th>';
-            inlineQty += '<th scope="col" id="table_title">Franchisee</th>';
-            inlineQty += '<th scope="col" id="table_nb_products">B4 Envelope</th>';
-            inlineQty += '<th scope="col" id="table_c5_prod" class="mpex1_header">500g Satchel</th>';
-            inlineQty += '<th scope="col" id="table_mpex_order" class="mpex1_header">1kg Satchel</th>';
-            inlineQty += '<th scope="col" id="table_mpex_1" class="mpex1_header">3kg Satchel</th>';
-            inlineQty += '<th scope="col" id="table_mpex_2" class="mpex1_header">5kg Satchel</th>';
-            inlineQty += '<th scope="col" id="table_mpex_3" class="mpex1_header">DX Address</th>';
-            inlineQty += '<th scope="col" id="table_mpex_4" class="mpex1_header">DX Exchange</th>';
-            inlineQty += '<th scope="col" id="table_mpex_5" class="mpex1_header">State</th>';
-            inlineQty += '<th scope="col" id="table_mpex_6" class="mpex1_header">Postcode</th>';
-            inlineQty += '<th scope="col" id="table_mpex_7" class="mpex1_header">Connote #</th>';
-
-            inlineQty += '</tr>';
-            inlineQty += '</thead>';
-            inlineQty += '<tbody>';
-            inlineQty += '<tr class="total_row sum_row">';
-            inlineQty += tableRowCells(zee);
-            inlineQty += '</tr></tbody></table>';
-            inlineQty += '</div>';
-
-            return inlineQty;
-        }
-
         /**
          * The table that will display the differents invoices linked to the franchisee and the time period.
          * @return  {String}    inlineQty
@@ -351,55 +484,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
             return responseDate;
         }
 
-        function tableRowCells(zee) {
-            var ordersSearch = search.load({
-                id: 'customsearch_mpex_zee_order_search',
-                type: 'customrecord_zee_mpex_order'
-            });
-
-            ordersSearch.filters.push(search.createFilter({
-                name: 'custrecord_mpex_order_franchisee',
-                operator: search.Operator.IS,
-                values: zee
-            }));
-
-            var ordersResultSet = ordersSearch.run();
-            var inlineQty = '';
-            ordersResultSet.each(function(searchResult) {
-                var date = searchResult.getValue({ name: 'custrecord_mpex_order_date'});
-                var zeeName = searchResult.getValue({ name: 'companyname', join: 'CUSTRECORD_MPEX_ORDER_FRANCHISEE'});
-                var b4 = searchResult.getValue({ name: 'custrecord_mpex_order_b4'});
-                var g500 = searchResult.getValue({ name: 'custrecord_mpex_order_500_satchel'});
-                var kg1 = searchResult.getValue({ name: 'custrecord_mpex_order_1kg_satchel'});
-                var kg3 = searchResult.getValue({ name: 'custrecord_mpex_order_3kg_satchel'});
-                var kg5 = searchResult.getValue({ name: 'custrecord_mpex_order_5kg_satchel'});
-                
-                var dxAddr = searchResult.getValue({ name: 'custrecord_mpex_order_dx_addr'});
-                var dxExch = searchResult.getValue({ name: 'custrecord_mpex_order_dx_exch'});
-                var state = searchResult.getValue({ name: 'custrecord_mpex_order_state'});
-                var zip = searchResult.getValue({ name: 'custrecord_mpex_order_postcode'});
-                var connote = searchResult.getValue({ name: 'custrecord_mpex_order_connote'});
-                inlineQty += '<tr class="total_row sum_row">';
-                inlineQty += '<td headers="table_nb_products" class="mpex1">' + date + '</td>';
-                inlineQty += '<td headers="table_b4_prod" class="mpex1">' + zeeName + '</td>';
-                inlineQty += '<td headers="table_b4_prod" class="mpex1">' + b4 + ' (10-Packs)</td>';
-                inlineQty += '<td headers="table_mpex_order" class="mpex1">' + g500 + ' (10-Packs)</td>';
-                inlineQty += '<td headers="table_mpex_1" class="mpex1">' + kg1 + ' (10-Packs)</td>';
-                inlineQty += '<td headers="table_mpex_2" class="mpex1">' + kg3 + ' (10-Packs)</td>';
-                inlineQty += '<td headers="table_mpex_2" class="mpex1">' + kg5 + ' (10-Packs)</td>';
-                inlineQty += '<td headers="table_mpex_2" class="mpex1">' + dxAddr + '</td>';
-                inlineQty += '<td headers="table_mpex_2" class="mpex1">' + dxExch + '</td>';
-                inlineQty += '<td headers="table_mpex_2" class="mpex1">' + state + '</td>';
-                inlineQty += '<td headers="table_mpex_2" class="mpex1">' + zip + '</td>';
-                inlineQty += '<td headers="table_mpex_2" class="mpex1">' + connote + '</td>';
-
-                inlineQty += '</tr>';
-                return true;
-            
-            });
-                   
-            return inlineQty;
-        }
+        
         
 
         /**

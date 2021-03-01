@@ -178,7 +178,24 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     zeeIdSet.push(zeeId);
                     var date = searchResult.getValue({name: "custrecord_mpex_order_date" });
                     var tollAcctNum = searchResult.getValue({name: "custrecord_mpex_order_toll_acc_num" });
-                    var accName = 'MailPlus-' + searchResult.getValue({name: "companyname", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
+                    var accName = 'MailPlus - ' + searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
+                    
+                    if (searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" }).indexOf("OLD") !== -1) {
+                        accName = searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
+                        accName = accName.replace("OLD", '');
+                        accName = accName.replace("June 2019", "");
+                        accName = accName.replace("Oct 2019", "");
+                        accName = accName.trim();
+                        accName = 'MailPlus - ' + accName;
+                    }
+
+                    if (zeeId == 696179) {
+                        accName = 'MailPlus - Brisbane CBD';
+                    }
+                    if (zeeId == 435) {
+                        accName = 'MailPlus - Head Office';
+                    }
+
                     var mpex_b4 = searchResult.getValue({name: "custrecord_mpex_order_b4" });
                     var mpex_500g = searchResult.getValue({name: "custrecord_mpex_order_500_satchel" });
                     var mpex_1kg = searchResult.getValue({name: "custrecord_mpex_order_1kg_satchel" });
@@ -212,8 +229,22 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 if (zeeIdSet.indexOf(zeeId) == -1) {
                     zeeIdSet.push(zeeId);
                     var tollAcctNum = orderResult.getValue('custentity_toll_acc_number');
-                    var accName = 'MailPlus-' + orderResult.getValue('companyname');
-
+                    var accName = 'MailPlus - ' + orderResult.getValue('entityid');
+                    if (orderResult.getValue('entityid').indexOf("OLD") !== -1) {
+                        accName = orderResult.getValue('entityid');
+                        accName = accName.replace("OLD", '');
+                        accName = accName.replace("June 2019", "");
+                        accName = accName.replace("Oct 2019", "");
+                        accName = accName.trim();
+                        accName = 'MailPlus - ' + accName;
+                    }
+                    
+                    if (zeeId == 696179) {
+                        accName = 'MailPlus - Brisbane CBD';
+                    }
+                    if (zeeId == 435) {
+                        accName = 'MailPlus - Head Office';
+                    }
                     var mpex_b4 = '';
                     var mpex_500g = '';
                     var mpex_1kg = '';
@@ -249,8 +280,8 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     var date = '';
                     var connote = '';
                     var status = '';
-                    console.log('orderResult : ', orderResult);
-                    console.log('vals: ', zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip)
+                    //console.log('orderResult : ', orderResult);
+                    //console.log('vals: ', zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip)
                     ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote, status]);
                     ordersDataSet2.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote]);
 
@@ -260,6 +291,12 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 return true;
 
             });
+
+            // ordersDataSet.sort(function(a,b) {
+            //     return a[0]-b[0]
+            // });
+
+            ordersDataSet2.sort(sortFunction);
 
             // Update datatable rows.
             var datatable = $('#product_order-preview').dataTable().api();
@@ -277,6 +314,15 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             $('.status_dropdown_div').addClass('show');
             //$('.date_to').addClass('show');
             return true;
+        }
+
+        function sortFunction(a, b) {
+            if (a[3] === b[3]) {
+                return 0;
+            }
+            else {
+                return (a[3] < b[3]) ? -1 : 1;
+            }
         }
 
         function saveRecord(context) {
@@ -371,7 +417,23 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 //zeeIdSet.push(zeeId);
                 var date = searchResult.getValue({name: "custrecord_mpex_order_date" });
                 var tollAcctNum = searchResult.getValue({name: "custrecord_mpex_order_toll_acc_num" });
-                var accName = 'MailPlus-' + searchResult.getValue({name: "companyname", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
+                var accName = 'MailPlus - ' + searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
+                
+                if (searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" }).indexOf("OLD") !== -1) {
+                    accName = searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
+                    accName = accName.replace("OLD", '');
+                    accName = accName.replace("June 2019", "");
+                    accName = accName.replace("Oct 2019", "");
+                    accName = accName.trim();
+                    accName = 'MailPlus - ' + accName;
+                }
+                if (zeeId == 696179) {
+                    accName = 'MailPlus - Brisbane CBD';
+                }
+                if (zeeId == 435) {
+                    accName = 'MailPlus - Head Office';
+                }
+
                 var mpex_b4 = searchResult.getValue({name: "custrecord_mpex_order_b4" });
                 var mpex_500g = searchResult.getValue({name: "custrecord_mpex_order_500_satchel" });
                 var mpex_1kg = searchResult.getValue({name: "custrecord_mpex_order_1kg_satchel" });
@@ -412,7 +474,6 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             
             ordersDataSet.forEach(function(row) {
                 row = row.join(';');
-                console.log("tesT"+ row);
                 csv += row;
                 csv += "\n";
             });
