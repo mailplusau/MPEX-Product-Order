@@ -135,12 +135,12 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
             })
             if (!isNullorEmpty(date_from) && !isNullorEmpty(date_to)) {
                 zeeSearch.filters.push(search.createFilter({
-                    name: 'custrecord_mpex_order_date',
+                    name: 'lastmodified',
                     operator: search.Operator.ONORAFTER,
                     values: date_from
                 }));
                 zeeSearch.filters.push(search.createFilter({
-                    name: 'custrecord_mpex_order_date',
+                    name: 'lastmodified',
                     operator: search.Operator.ONORBEFORE,
                     values: date_to
                 }));
@@ -160,12 +160,12 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
                     details: weekAgo
                 });
                 zeeSearch.filters.push(search.createFilter({
-                    name: 'custrecord_mpex_order_date',
+                    name: 'lastmodified',
                     operator: search.Operator.ONORAFTER,
                     values: weekAgo
                 }));
                 zeeSearch.filters.push(search.createFilter({
-                    name: 'custrecord_mpex_order_date',
+                    name: 'lastmodified',
                     operator: search.Operator.ONORBEFORE,
                     values: today
                 }));

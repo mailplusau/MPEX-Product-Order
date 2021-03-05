@@ -27,11 +27,11 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     { title: '1kg Satchel'}, // 5
                     { title: '3kg Satchel'}, // 6
                     { title: '5kg Satchel'}, // 7
-                    { title: 'DX Address'}, // 8 
-                    { title: 'DX Exchange'}, // 9
-                    { title: 'State'}, // 10
-                    { title: 'Postcode'}, // 11
-                    { title: 'Connote #'}, // 12
+                    //{ title: 'DX Address'}, // 
+                    //{ title: 'DX Exchange'}, //
+                    //{ title: 'State'}, //
+                    //{ title: 'Postcode'}, //
+                    { title: 'Connote #'}, // 8
                 ],
                 columnDefs: [{
                         targets: [0],
@@ -40,7 +40,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 ],
                 order: [[1, "desc"]],
                 rowCallback: function(row, data) {
-                    if (data[0] === 'Active' && isNullorEmpty(data[12])){
+                    if (data[0] === 'Active' && isNullorEmpty(data[8])){
                         $(row).css('background-color', 'rgba(144, 238, 144, 0.75)'); // Salmon  
                     }
                 } 
@@ -122,7 +122,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             var inlineQty = '';
             ordersResultSet.each(function(searchResult) {
                 var status = searchResult.getValue({ name: 'custrecord_mpex_order_status'});
-                var date = searchResult.getValue({ name: 'custrecord_mpex_order_date'});
+                var date = searchResult.getValue({ name: 'lastmodified'});
                 var zeeName = searchResult.getValue({ name: 'companyname', join: 'CUSTRECORD_MPEX_ORDER_FRANCHISEE'});
                 var b4 = searchResult.getValue({ name: 'custrecord_mpex_order_b4'});
                 var g500 = searchResult.getValue({ name: 'custrecord_mpex_order_500_satchel'});
@@ -145,7 +145,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 } else {
                     status = "Check with Head Office";
                 }
-                tableSet.push([status, date, zeeName, b4, g500, kg1, kg3,  kg5, dxAddr, dxExch, state, zip, connote]);
+                tableSet.push([status, date, zeeName, b4, g500, kg1, kg3,  kg5, connote]);
 
                 return true;
             

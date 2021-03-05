@@ -176,7 +176,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
 
                 if (status == 1 && isNullorEmpty(connote) && zeeIdSet.indexOf(zeeId) == -1) {
                     zeeIdSet.push(zeeId);
-                    var date = searchResult.getValue({name: "custrecord_mpex_order_date" });
+                    var date = searchResult.getValue({name: "lastmodified" });
                     var tollAcctNum = searchResult.getValue({name: "custrecord_mpex_order_toll_acc_num" });
                     var accName = 'MailPlus - ' + searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
                     
@@ -380,12 +380,12 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             
             if (!isNullorEmpty(date_from) && !isNullorEmpty(date_to)) {
                 zeeSearch.filters.push(search.createFilter({
-                    name: 'custrecord_mpex_order_date',
+                    name: 'lastmodified',
                     operator: search.Operator.ONORAFTER,
                     values: date_from
                 }));
                 zeeSearch.filters.push(search.createFilter({
-                    name: 'custrecord_mpex_order_date',
+                    name: 'lastmodified',
                     operator: search.Operator.ONORBEFORE,
                     values: date_to
                 }));
@@ -415,7 +415,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 var zeeId =   searchResult.getValue({name: "custrecord_mpex_order_franchisee"});
 
                 //zeeIdSet.push(zeeId);
-                var date = searchResult.getValue({name: "custrecord_mpex_order_date" });
+                var date = searchResult.getValue({name: "lastmodified" });
                 var tollAcctNum = searchResult.getValue({name: "custrecord_mpex_order_toll_acc_num" });
                 var accName = 'MailPlus - ' + searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
                 

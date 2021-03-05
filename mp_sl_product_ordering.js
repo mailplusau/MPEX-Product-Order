@@ -275,7 +275,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                     type: 'customrecord_zee_mpex_order',
                     id: activeOrder
                 });
-                //var date = new Date();
+                var date = new Date();
                 date.setDate(date.getDate() + 1);
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_b4', value: b4});
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_500_satchel', value: g500});
@@ -283,7 +283,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_3kg_satchel', value: kg3});
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_5kg_satchel', value: kg5});
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_total', value: b4 + g500 + kg1 + kg3 + kg5});
-                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_date', value: date});
+                //mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_date', value: date});
 
                 mpexOrderRec.save({
                     enableSourcing: true,
@@ -335,9 +335,11 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                     type: 'customrecord_zee_mpex_order',
                     isDynamic: true,
                 });
+
                 
                 var date = new Date();
-                //date.setDate(date.getDate() + 1);
+                date.setDate(date.getDate() + 1);
+                //date.toLocaleString('en-AU', 'Australia/Sydney');
                 //1 = ACTIVE, 2 = PROCESSING, 3 = COMPLETED (if connote)
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_status', value: 1});
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_franchisee', value: zee_id});
@@ -347,7 +349,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_3kg_satchel', value: kg3});
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_5kg_satchel', value: kg5});
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_total', value: b4 + g500 + kg1 + kg3 + kg5});
-                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_date', value: date });
+                //mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_date', value: date });
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_mp_id', value: zee_id});
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_toll_acc_num', value: tollAcctNum});
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_dx_addr', value: dxAddr});

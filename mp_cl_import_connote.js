@@ -86,12 +86,12 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 var date_to = currentScript.getValue({fieldId: 'custpage_date_to'});
 
                 activeSearch.filters.push(search.createFilter({
-                    name: 'custrecord_mpex_order_date',
+                    name: 'lastmodified',
                     operator: search.Operator.ONORAFTER,
                     values: formatDate(date_from)
                 }));
                 activeSearch.filters.push(search.createFilter({
-                    name: 'custrecord_mpex_order_date',
+                    name: 'lastmodified',
                     operator: search.Operator.ONORBEFORE,
                     values: formatDate(date_to)
                 }));
@@ -107,12 +107,12 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 weekAgo = formatDate(weekAgo);
 
                 activeSearch.filters.push(search.createFilter({
-                    name: 'custrecord_mpex_order_date',
+                    name: 'lastmodified',
                     operator: search.Operator.ONORAFTER,
                     values: weekAgo
                 }));
                 activeSearch.filters.push(search.createFilter({
-                    name: 'custrecord_mpex_order_date',
+                    name: 'lastmodified',
                     operator: search.Operator.ONORBEFORE,
                     values: today
                 }));
