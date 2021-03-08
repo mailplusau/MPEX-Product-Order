@@ -180,11 +180,13 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     var tollAcctNum = searchResult.getValue({name: "custrecord_mpex_order_toll_acc_num" });
                     var accName = 'MailPlus - ' + searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
                     
-                    if (searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" }).indexOf("OLD") !== -1) {
+                    if (searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" }).toUpperCase().indexOf("OLD") !== -1) {
                         accName = searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
                         accName = accName.replace("OLD", '');
+                        accName = accName.replace("Old", "");
                         accName = accName.replace("June 2019", "");
                         accName = accName.replace("Oct 2019", "");
+                        accName = accName.replace("Feb 21", "");
                         accName = accName.trim();
                         accName = 'MailPlus - ' + accName;
                     }
@@ -230,11 +232,13 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     zeeIdSet.push(zeeId);
                     var tollAcctNum = orderResult.getValue('custentity_toll_acc_number');
                     var accName = 'MailPlus - ' + orderResult.getValue('entityid');
-                    if (orderResult.getValue('entityid').indexOf("OLD") !== -1) {
+                    if (orderResult.getValue('entityid').toUpperCase().indexOf("OLD") !== -1) {
                         accName = orderResult.getValue('entityid');
                         accName = accName.replace("OLD", '');
+                        accName = accName.replace("Old", "");
                         accName = accName.replace("June 2019", "");
                         accName = accName.replace("Oct 2019", "");
+                        accName = accName.replace("Feb 21", "");
                         accName = accName.trim();
                         accName = 'MailPlus - ' + accName;
                     }
@@ -419,11 +423,13 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 var tollAcctNum = searchResult.getValue({name: "custrecord_mpex_order_toll_acc_num" });
                 var accName = 'MailPlus - ' + searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
                 
-                if (searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" }).indexOf("OLD") !== -1) {
+                if (searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" }).toUpperCase().indexOf("OLD") !== -1) {
                     accName = searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
                     accName = accName.replace("OLD", '');
+                    accName = accName.replace("Old", "");
                     accName = accName.replace("June 2019", "");
                     accName = accName.replace("Oct 2019", "");
+                    accName = accName.replace("Feb 21", "");
                     accName = accName.trim();
                     accName = 'MailPlus - ' + accName;
                 }
