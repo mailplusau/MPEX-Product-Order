@@ -265,11 +265,13 @@ function(ui, email, runtime, search, record, log, redirect, format, task, file) 
 
             form.addField({
                 id: 'zee_array',
-                type: ui.FieldType.TEXT,
+                type: ui.FieldType.LONGTEXT,
                 label: 'zee_array'
             }).updateDisplayType({
                 displayType: ui.FieldDisplayType.HIDDEN
             }).defaultValue = zeeArr;
+
+
 
 
             form.addField({
