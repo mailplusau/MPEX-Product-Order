@@ -60,7 +60,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 console.log('loading');
                 //prod = 1089, sb = 1140
                 //var url = 'https://1048144-sb3.app.netsuite.com' + "/app/site/hosting/scriptlet.nl?script=1089&deploy=1";
-               
+                console.log(zee);
                 var url = baseURL + "/app/site/hosting/scriptlet.nl?script=1178&deploy=1";
                 currentScript.setValue({
                     fieldId: 'custpage_zee_selected',

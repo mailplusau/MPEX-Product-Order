@@ -9,8 +9,8 @@
  */
 
 
-define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/log', 'N/redirect', 'N/format', 'N/task', 'N/file'], 
-function(ui, email, runtime, search, record, log, redirect, format, task, file) {
+define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/log', 'N/redirect', 'N/format', 'N/task', 'N/file', 'N/error'], 
+function(ui, email, runtime, search, record, log, redirect, format, task, file, error) {
     var baseURL = 'https://1048144.app.netsuite.com';
     if (runtime.EnvType == "SANDBOX") {
         baseURL = 'https://1048144-sb3.app.netsuite.com';
