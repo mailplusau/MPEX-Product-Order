@@ -156,7 +156,7 @@ function(ui, email, runtime, search, record, http, log, redirect, format, task) 
         function dateFilterSection() {
             var inlineQty = '<div class="form-group container total_amount_section hide">';
             inlineQty += '<div class="row">';
-            inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">DATE FILTER</span></h4></div>';
+            inlineQty += '<div class="col-xs-12 heading1"><h4><span style="background-color:#379E8F" class="label label-default col-xs-12">DATE FILTER</span></h4></div>';
             inlineQty += '</div>';
             inlineQty += '</div>';
 
@@ -187,7 +187,7 @@ function(ui, email, runtime, search, record, http, log, redirect, format, task) 
 
             var inlineQty = '<div class="form-group container header_section hide">';
             inlineQty += '<div class="row">';
-            inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">FRANCHISEE FILTER</span></h4></div>';
+            inlineQty += '<div class="col-xs-12 heading1"><h4><span style="background-color:#379E8F" class="label label-default col-xs-12">FRANCHISEE FILTER</span></h4></div>';
             inlineQty += '</div>';
             inlineQty += '</div>';
             inlineQty += '<div class="form-group container zee_dropdown_section >';
@@ -237,7 +237,7 @@ function(ui, email, runtime, search, record, http, log, redirect, format, task) 
 
             var inlineQty = '<div class="form-group container header_section1 hide">';
             inlineQty += '<div class="row">';
-            inlineQty += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">STATUS FILTER</span></h4></div>';
+            inlineQty += '<div class="col-xs-12 heading1"><h4><span style="background-color:#379E8F" class="label label-default col-xs-12">STATUS FILTER</span></h4></div>';
             inlineQty += '</div>';
             inlineQty += '</div>';
             inlineQty += '<div class="form-group container status_dropdown_section >';

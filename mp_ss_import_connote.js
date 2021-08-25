@@ -84,9 +84,9 @@ define(['N/runtime', 'N/search', 'N/record', 'N/log', 'N/task', 'N/currentRecord
                 var csv_values = line.value.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
                 var zee_id = csv_values[1];
                 var toll_acc = csv_values[2];
-                var total = csv_values[9];
-                var postcode = csv_values[13];
-                var connote = csv_values[14];
+                var total = csv_values[13];
+                var postcode = csv_values[17];
+                var connote = csv_values[18];
 
                 addConnote(zee_id, toll_acc, total, postcode, connote, counter, file_id, date_from, date_to);
                 index++;

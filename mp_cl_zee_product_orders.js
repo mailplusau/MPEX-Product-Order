@@ -22,7 +22,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             invoice_datatable_inline_html += '.dataTables_wrapper {font-size: 14px;}';
             invoice_datatable_inline_html += 'table#product_order-preview th {text-align: center;}.bolded{font-weight: bold;}</style>';
             invoice_datatable_inline_html += '<table cellpadding="15" id="product_order-preview" class="table table-responsive table-striped customer tablesorter" style="width: 100%;">';
-            invoice_datatable_inline_html += '<thead style="color: white;background-color: #607799;">';
+            invoice_datatable_inline_html += '<thead style="color: white;background-color: #379E8F;">';
             invoice_datatable_inline_html += '</thead>';
             invoice_datatable_inline_html += '<tbody id="result_orders"></tbody>';
             invoice_datatable_inline_html += '</table>';
@@ -37,17 +37,21 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     { title: "TOLL Account #" },//2
                     { title: "Account Name" },  //3
                     { title: "B4 Envelope" },   //4
-                    { title: "500g Satchel" },  //5
-                    { title: "1kg Satchel" },   //6
-                    { title: "3kg Satchel" },   //7
-                    { title: "5kg Satchel" },   //8
-                    { title: "Total" },         //9
-                    { title: "DX Address" },    //10
-                    { title: "DX Exchange" },   //11
-                    { title: "State" },         //12
-                    { title: "Postcode" },      //13
-                    { title: "Connote #"},       //14
-                    { title: "Status"}       //15
+                    { title: "MAILPLUS - 500g Satchel" },  //5
+                    { title: "MAILPLUS - 1kg Satchel" },   //6
+                    { title: "MAILPLUS - 3kg Satchel" },   //7
+                    { title: "MAILPLUS - 5kg Satchel" },   //8
+                    { title: "TOLL - 500g Satchel" },  //9
+                    { title: "TOLL - 1kg Satchel" },   //10
+                    { title: "TOLL - 3kg Satchel" },   //11
+                    { title: "TOLL - 5kg Satchel" },   //12
+                    { title: "Total" },         //13
+                    { title: "DX Address" },    //14
+                    { title: "DX Exchange" },   //15
+                    { title: "State" },         //16
+                    { title: "Postcode" },      //17
+                    { title: "Connote #"},       //18
+                    { title: "Status"}       //19
                 ],
                 order: [[3, "asc"]],
                 
@@ -203,15 +207,24 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     var mpex_1kg = searchResult.getValue({name: "custrecord_mpex_order_1kg_satchel" });
                     var mpex_3kg = searchResult.getValue({name: "custrecord_mpex_order_3kg_satchel" });
                     var mpex_5kg = searchResult.getValue({name: "custrecord_mpex_order_5kg_satchel" });
-                    var total = parseInt(mpex_b4) + parseInt(mpex_500g) + parseInt(mpex_1kg) + parseInt(mpex_3kg) + parseInt(mpex_5kg);
+                    
+                    var mpex_500g_toll = searchResult.getValue({name: "custrecord_mpex_order_500_satchel_toll" });
+                    var mpex_1kg_toll = searchResult.getValue({name: "custrecord_mpex_order_1kg_satchel_toll" });
+                    var mpex_3kg_toll = searchResult.getValue({name: "custrecord_mpex_order_3kg_satchel_toll" });
+                    var mpex_5kg_toll = searchResult.getValue({name: "custrecord_mpex_order_5kg_satchel_toll" });
+                    var toll_total = 0;
+                    if (!isNullorEmpty(mpex_500g_toll) && !isNullorEmpty(mpex_1kg_toll) && !isNullorEmpty(mpex_3kg_toll) && !isNullorEmpty(mpex_5kg_toll)) {
+                        toll_total = parseInt(mpex_500g_toll) + parseInt(mpex_1kg_toll) + parseInt(mpex_3kg_toll) + parseInt(mpex_5kg_toll);
+                    }
+                    var total = parseInt(mpex_b4) + parseInt(mpex_500g) + parseInt(mpex_1kg) + parseInt(mpex_3kg) + parseInt(mpex_5kg) + toll_total;
 
                     var dxAddr = searchResult.getValue({name: "custrecord_mpex_order_dx_addr" });
                     var dxExch = searchResult.getValue({name: "custrecord_mpex_order_dx_exch" });
                     var state = searchResult.getValue({name: "custrecord_mpex_order_state" });
                     var zip = searchResult.getValue({name: "custrecord_mpex_order_postcode" });
                     var connote = '';
-                    ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote, status]);
-                    ordersDataSet2.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote]);
+                    ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote, status]);
+                    ordersDataSet2.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote]);
 
                 }
                 return true;
@@ -254,6 +267,11 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     var mpex_1kg = '';
                     var mpex_3kg = '';
                     var mpex_5kg = '';
+                    
+                    var mpex_500g_toll = '';
+                    var mpex_1kg_toll = '';
+                    var mpex_3kg_toll = '';
+                    var mpex_5kg_toll = '';
 
                     var total = 0;
                     
@@ -286,8 +304,8 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     var status = '';
                     //console.log('orderResult : ', orderResult);
                     //console.log('vals: ', zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip)
-                    ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote, status]);
-                    ordersDataSet2.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote]);
+                    ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote, status]);
+                    ordersDataSet2.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote]);
 
                 }
                 
@@ -445,14 +463,25 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 var mpex_1kg = searchResult.getValue({name: "custrecord_mpex_order_1kg_satchel" });
                 var mpex_3kg = searchResult.getValue({name: "custrecord_mpex_order_3kg_satchel" });
                 var mpex_5kg = searchResult.getValue({name: "custrecord_mpex_order_5kg_satchel" });
-                var total = parseInt(mpex_b4) + parseInt(mpex_500g) + parseInt(mpex_1kg) + parseInt(mpex_3kg) + parseInt(mpex_5kg);
+
+                var mpex_500g_toll = searchResult.getValue({name: "custrecord_mpex_order_500_satchel_toll" });
+                var mpex_1kg_toll = searchResult.getValue({name: "custrecord_mpex_order_1kg_satchel_toll" });
+                var mpex_3kg_toll = searchResult.getValue({name: "custrecord_mpex_order_3kg_satchel_toll" });
+                var mpex_5kg_toll = searchResult.getValue({name: "custrecord_mpex_order_5kg_satchel_toll" });
+                
+                var toll_total = 0;
+                if (!isNullorEmpty(mpex_500g_toll) && !isNullorEmpty(mpex_1kg_toll) && !isNullorEmpty(mpex_3kg_toll) && !isNullorEmpty(mpex_5kg_toll)) {
+                    toll_total = parseInt(mpex_500g_toll) + parseInt(mpex_1kg_toll) + parseInt(mpex_3kg_toll) + parseInt(mpex_5kg_toll);
+                }
+                var total = parseInt(mpex_b4) + parseInt(mpex_500g) + parseInt(mpex_1kg) + parseInt(mpex_3kg) + parseInt(mpex_5kg) + toll_total;
+
 
                 var dxAddr = searchResult.getValue({name: "custrecord_mpex_order_dx_addr" });
                 var dxExch = searchResult.getValue({name: "custrecord_mpex_order_dx_exch" });
                 var state = searchResult.getValue({name: "custrecord_mpex_order_state" });
                 var zip = searchResult.getValue({name: "custrecord_mpex_order_postcode" });
                 var connote = searchResult.getValue({name: "custrecord_mpex_order_connote" });;
-                ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip, connote, status]);
+                ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote, status]);
 
                 return true;
             });
@@ -472,7 +501,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
          */
         function saveCsv(ordersDataSet) {
             var sep = "sep=;";
-            var headers = ["Date", "MP Internal ID", "TOLL Account #", "Account Name", "B4 Envelope", "500g Satchel", "1kg Satchel", "3kg Satchel", "5kg Satchel", "Total", "DX Address", "DX Exchange", "State", "Postcode", "Connote #"]
+            var headers = ["Date", "MP Internal ID", "TOLL Account #", "Account Name", "B4 Envelope", "500g Satchel", "1kg Satchel", "3kg Satchel", "5kg Satchel", "TOLL - 500g Satchel", "TOLL - 1kg Satchel", "TOLL - 3kg Satchel", "TOLL - 5kg Satchel", "Total", "DX Address", "DX Exchange", "State", "Postcode", "Connote #"]
             headers = headers.join(';'); // .join(', ')
 
             var csv = sep + "\n" + headers + "\n";

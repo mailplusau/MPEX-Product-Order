@@ -22,16 +22,16 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     { title: 'Order Status'}, //0
                     { title: 'Order Date'}, //1
                     { title: 'Franchisee'}, //2
-                    { title: 'B4 Envelope'}, // 3
-                    { title: '500g Satchel'}, // 4 
-                    { title: '1kg Satchel'}, // 5
-                    { title: '3kg Satchel'}, // 6
-                    { title: '5kg Satchel'}, // 7
-                    //{ title: 'DX Address'}, // 
-                    //{ title: 'DX Exchange'}, //
-                    //{ title: 'State'}, //
-                    //{ title: 'Postcode'}, //
-                    { title: 'Connote #'}, // 8
+                    { title: 'MAILPLUS - B4 Envelope'}, // 3
+                    { title: 'MAILPLUS - 500g Satchel'}, // 4 
+                    { title: 'MAILPLUS - 1kg Satchel'}, // 5
+                    { title: 'MAILPLUS - 3kg Satchel'}, // 6
+                    { title: 'MAILPLUS - 5kg Satchel'}, // 7
+                    { title: 'TOLL - 500g Satchel'}, // 8
+                    { title: 'TOLL - 1kg Satchel'}, // 9 
+                    { title: 'TOLL - 3kg Satchel'}, // 10
+                    { title: 'TOLL - 5kg Satchel'}, // 11
+                    { title: 'Connote #'}, // 12
                 ],
                 columnDefs: [{
                         targets: [0],
@@ -40,7 +40,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 ],
                 order: [[1, "desc"]],
                 rowCallback: function(row, data) {
-                    if (data[0] === 'Active' && isNullorEmpty(data[8])){
+                    if (data[0] === 'Active' && isNullorEmpty(data[12])){
                         $(row).css('background-color', 'rgba(144, 238, 144, 0.75)'); // Salmon  
                     }
                 } 
@@ -68,13 +68,89 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             }
 
             $(document).ready(function(){
-                $("input").blur(function(){
+                $("#500g_text").blur(function(){
                     var val = $(this).val();
                         if( val % 10 != 0){
                             var remainderVal = (val % 10);
                             var newVal = (val-remainderVal) + 10;
                             $(this).val(newVal);
                         }
+                });
+                $("#5kg_text").blur(function(){
+                    var val = $(this).val();
+                        if( val % 10 != 0){
+                            var remainderVal = (val % 10);
+                            var newVal = (val-remainderVal) + 10;
+                            $(this).val(newVal);
+                        }
+                });
+                $("#1kg_text").blur(function(){
+                    var val = $(this).val();
+                        if( val % 10 != 0){
+                            var remainderVal = (val % 10);
+                            var newVal = (val-remainderVal) + 10;
+                            $(this).val(newVal);
+                        }
+                });
+                $("#b4_text").blur(function(){
+                    var val = $(this).val();
+                        if( val % 10 != 0){
+                            var remainderVal = (val % 10);
+                            var newVal = (val-remainderVal) + 10;
+                            $(this).val(newVal);
+                        }
+                });
+                $("#3kg_text").blur(function(){
+                    var val = $(this).val();
+                        if( val % 10 != 0){
+                            var remainderVal = (val % 10);
+                            var newVal = (val-remainderVal) + 10;
+                            $(this).val(newVal);
+                        }
+                });
+                $("#500g_text_toll").blur(function(){
+                    var val = $(this).val();
+                    if (val < 10) {
+                        $(this).val(10);
+                    }
+                    else if( val % 5 != 0){
+                        var remainderVal = (val % 5);
+                        var newVal = (val-remainderVal) + 5;
+                        $(this).val(newVal);
+                    }
+                });
+                $("#3kg_text_toll").blur(function(){
+                    var val = $(this).val();
+                    if (val < 10) {
+                        $(this).val(10);
+                    }
+                    else if( val % 5 != 0){
+                        var remainderVal = (val % 5);
+                        var newVal = (val-remainderVal) + 5;
+                        $(this).val(newVal);
+                    }
+                });
+                $("#1kg_text_toll").blur(function(){
+                    var val = $(this).val();
+                    if (val < 10) {
+                        $(this).val(10);
+                    }
+                    else if( val % 5 != 0){
+                        var remainderVal = (val % 5);
+                        var newVal = (val-remainderVal) + 5;
+                        $(this).val(newVal);
+                    }
+                });
+                $("#5kg_text_toll").blur(function(){
+                    var val = $(this).val();
+                    if (val < 10) {
+                        $(this).val(10);
+                    }
+                    else if( val % 5 != 0){
+                        var remainderVal = (val % 5);
+                        var newVal = (val-remainderVal) + 5;
+                        $(this).val(newVal);
+                    }
                 });
               });
 
@@ -129,6 +205,10 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 var kg1 = searchResult.getValue({ name: 'custrecord_mpex_order_1kg_satchel'});
                 var kg3 = searchResult.getValue({ name: 'custrecord_mpex_order_3kg_satchel'});
                 var kg5 = searchResult.getValue({ name: 'custrecord_mpex_order_5kg_satchel'});
+                var g500_toll = searchResult.getValue({ name: 'custrecord_mpex_order_500_satchel_toll'});
+                var kg1_toll = searchResult.getValue({ name: 'custrecord_mpex_order_1kg_satchel_toll'});
+                var kg3_toll = searchResult.getValue({ name: 'custrecord_mpex_order_3kg_satchel_toll'});
+                var kg5_toll = searchResult.getValue({ name: 'custrecord_mpex_order_5kg_satchel_toll'});
                 
                 var dxAddr = searchResult.getValue({ name: 'custrecord_mpex_order_dx_addr'});
                 var dxExch = searchResult.getValue({ name: 'custrecord_mpex_order_dx_exch'});
@@ -145,7 +225,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 } else {
                     status = "Check with Head Office";
                 }
-                tableSet.push([status, date, zeeName, b4, g500, kg1, kg3,  kg5, connote]);
+                tableSet.push([status, date, zeeName, b4, g500, kg1, kg3,  kg5, g500_toll, kg1_toll, kg3_toll, kg5_toll, connote]);
 
                 return true;
             
@@ -189,9 +269,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
         }
         function saveRecord() {
             console.log("test");
-            var currentScript = currentRecord.get();     
-            console.log("test2");
-       
+            var currentScript = currentRecord.get();            
             var zee_id = currentScript.getValue({ fieldId: 'custpage_zee_selected' });
             console.log(zee_id);
             zee_id = parseInt(zee_id);
@@ -202,6 +280,10 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 var kg1 = checkNull($('#1kg_text').val());
                 var kg3 = checkNull($('#3kg_text').val());
                 var kg5 = checkNull($('#5kg_text').val());
+                var g500_toll = checkNull($('#500g_text_toll').val());
+                var kg1_toll = checkNull($('#1kg_text_toll').val());
+                var kg3_toll = checkNull($('#3kg_text_toll').val());
+                var kg5_toll = checkNull($('#5kg_text_toll').val());
                 
                 console.log(b4);
                 currentScript.setValue({ fieldId: 'custpage_b4', value: b4 });
@@ -209,6 +291,10 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 currentScript.setValue({ fieldId: 'custpage_kg1', value: kg1});
                 currentScript.setValue({ fieldId: 'custpage_kg3', value: kg3});
                 currentScript.setValue({ fieldId: 'custpage_kg5', value: kg5});
+                currentScript.setValue({ fieldId: 'custpage_g500_toll', value: g500_toll});
+                currentScript.setValue({ fieldId: 'custpage_kg1_toll', value: kg1_toll});
+                currentScript.setValue({ fieldId: 'custpage_kg3_toll', value: kg3_toll});
+                currentScript.setValue({ fieldId: 'custpage_kg5_toll', value: kg5_toll});
                 
                 
 

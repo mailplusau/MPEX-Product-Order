@@ -22,16 +22,16 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     { title: 'Order Status'}, //0
                     { title: 'Order Date'}, //1
                     { title: 'Franchisee'}, //2
-                    { title: 'B4 Envelope'}, // 3
-                    { title: '500g Satchel'}, // 4 
-                    { title: '1kg Satchel'}, // 5
-                    { title: '3kg Satchel'}, // 6
-                    { title: '5kg Satchel'}, // 7
-                    //{ title: 'DX Address'}, //
-                    //{ title: 'DX Exchange'}, // 
-                    //{ title: 'State'}, // 
-                    //{ title: 'Postcode'}, //
-                    { title: 'Connote #'}, // 8
+                    { title: 'MAILPLUS - B4 Envelope'}, // 3
+                    { title: 'MAILPLUS - 500g Satchel'}, // 4 
+                    { title: 'MAILPLUS - 1kg Satchel'}, // 5
+                    { title: 'MAILPLUS - 3kg Satchel'}, // 6
+                    { title: 'MAILPLUS - 5kg Satchel'}, // 7
+                    { title: 'TOLL - 500g Satchel'}, // 8
+                    { title: 'TOLL - 1kg Satchel'}, // 9 
+                    { title: 'TOLL - 3kg Satchel'}, // 10
+                    { title: 'TOLL - 5kg Satchel'}, // 11
+                    { title: 'Connote #'}, // 12
                 ],
                 columnDefs: [{
                         targets: [0],
@@ -122,6 +122,11 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 var kg1 = searchResult.getValue({ name: 'custrecord_mpex_order_1kg_satchel'});
                 var kg3 = searchResult.getValue({ name: 'custrecord_mpex_order_3kg_satchel'});
                 var kg5 = searchResult.getValue({ name: 'custrecord_mpex_order_5kg_satchel'});
+
+                var g500_toll = searchResult.getValue({ name: 'custrecord_mpex_order_500_satchel_toll'});
+                var kg1_toll = searchResult.getValue({ name: 'custrecord_mpex_order_1kg_satchel_toll'});
+                var kg3_toll = searchResult.getValue({ name: 'custrecord_mpex_order_3kg_satchel_toll'});
+                var kg5_toll = searchResult.getValue({ name: 'custrecord_mpex_order_5kg_satchel_toll'});
                 
                 var dxAddr = searchResult.getValue({ name: 'custrecord_mpex_order_dx_addr'});
                 var dxExch = searchResult.getValue({ name: 'custrecord_mpex_order_dx_exch'});
@@ -138,7 +143,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 } else {
                     status = "Check with Head Office";
                 }
-                tableSet.push([status, date, zeeName, b4, g500, kg1, kg3,  kg5, connote]);
+                tableSet.push([status, date, zeeName, b4, g500, kg1, kg3, kg5, g500_toll, kg1_toll, kg3_toll,  kg5_toll, connote]);
 
                 return true;
             

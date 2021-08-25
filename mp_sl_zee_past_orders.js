@@ -174,7 +174,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
         function dataTable() {
             var inlineQty = '<br></br><style>table#mpex_orders {font-size: 12px;text-align: center;border: none;}.dataTables_wrapper {font-size: 14px;}table#mpex_orders th{text-align: center;} .bolded{font-weight: bold;}</style>';
             inlineQty += '<table id="mpex_orders" class="table table-responsive table-striped customer tablesorter" style="width: 100%;">';
-            inlineQty += '<thead style="color: white;background-color: #607799;">';
+            inlineQty += '<thead style="color: white;background-color: #379E8F;">';
             inlineQty += '<tr class="text-center">';
             inlineQty += '</tr>';
             inlineQty += '</thead>';

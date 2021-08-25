@@ -15,6 +15,10 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
             var kg1 = '';
             var kg3 = '';
             var kg5 = '';
+            var g500_toll = '';
+            var kg1_toll = '';
+            var kg3_toll = '';
+            var kg5_toll = '';
             var test = false;
             if (context.request.method === 'GET') {
                 // Load jQuery
@@ -65,6 +69,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                     var zeeResultSet = zeeSearch.run();
                     var activeOrder = 0;
                     var b4 = ''; var g500 = ''; var kg1 = ''; var kg3 = ''; var kg5 = ''; 
+                    var g500_toll = ''; var kg1_toll = ''; var kg3_toll = ''; var kg5_toll = ''; 
                     zeeResultSet.each(function(searchResult) {
                         var connote = searchResult.getValue({ name: 'custrecord_mpex_order_connote'});
                         var status = searchResult.getValue({ name: 'custrecord_mpex_order_status'});
@@ -76,6 +81,10 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                             kg1 = searchResult.getValue({name: "custrecord_mpex_order_1kg_satchel" });
                             kg3 = searchResult.getValue({name: "custrecord_mpex_order_3kg_satchel" });
                             kg5 = searchResult.getValue({name: "custrecord_mpex_order_5kg_satchel" });
+                            g500_toll = searchResult.getValue({name: "custrecord_mpex_order_500_satchel_toll" });
+                            kg1_toll = searchResult.getValue({name: "custrecord_mpex_order_1kg_satchel_toll" });
+                            kg3_toll = searchResult.getValue({name: "custrecord_mpex_order_3kg_satchel_toll" });
+                            kg5_toll = searchResult.getValue({name: "custrecord_mpex_order_5kg_satchel_toll" });
                             test = true;
                             return false;
                         }
@@ -87,19 +96,29 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                 //Instructions
                 inlineHtml += instructionsBox();
 
-                //Heading
-                inlineHtml += '<div class="form-group container product_order_section">';
-                inlineHtml += '<div class="row">';
-                inlineHtml += '<div class="col-xs-12 heading1"><h4><span class="label label-default col-xs-12">MPEX PRODUCT ORDER</span></h4></div>';
-                inlineHtml += '</div>';
-                inlineHtml += '</div>';
-
                 if (role != 1000) {
                     inlineHtml += franchiseeDropdownSection(context.request.parameters.zee);
                 }
 
+                //Heading
+                inlineHtml += '<div class="form-group container product_order_section">';
+                inlineHtml += '<div class="row">';
+                inlineHtml += '<div class="col-xs-12 heading1"><h4><span style="background-color: #379E8F;" class="label label-default col-xs-12">MAILPLUS PRODUCTS</span></h4></div>';
+                inlineHtml += '</div>';
+                inlineHtml += '</div>';
+
+                
+
                 inlineHtml += inputFields(b4, g500, kg1, kg3, kg5, test);
 
+                //Heading
+                inlineHtml += '<div class="form-group container toll_product_order_section">';
+                inlineHtml += '<div class="row">';
+                inlineHtml += '<div class="col-xs-12 heading1"><h4><span style="background-color: #379E8F;" class="label label-default col-xs-12">TOLL PRODUCTS</span></h4></div>';
+                inlineHtml += '</div>';
+                inlineHtml += '</div>';
+
+                inlineHtml += inputFieldsToll(g500_toll, kg1_toll, kg3_toll, kg5_toll, test);
 
                 if (!isNullorEmpty(context.request.parameters.zee) && context.request.parameters.zee != 0) {
                     form.addField({
@@ -174,6 +193,38 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                     displayType: ui.FieldDisplayType.HIDDEN
                 });
 
+                form.addField({
+                    id: 'custpage_g500_toll',
+                    type: ui.FieldType.TEXT,
+                    label: 'g500_toll'
+                }).updateDisplayType({
+                    displayType: ui.FieldDisplayType.HIDDEN
+                });
+
+                form.addField({
+                    id: 'custpage_kg1_toll',
+                    type: ui.FieldType.TEXT,
+                    label: 'kg1_toll'
+                }).updateDisplayType({
+                    displayType: ui.FieldDisplayType.HIDDEN
+                });
+
+                form.addField({
+                    id: 'custpage_kg3_toll',
+                    type: ui.FieldType.TEXT,
+                    label: 'kg3_toll'
+                }).updateDisplayType({
+                    displayType: ui.FieldDisplayType.HIDDEN
+                });
+
+                form.addField({
+                    id: 'custpage_kg5_toll',
+                    type: ui.FieldType.TEXT,
+                    label: 'kg5_toll'
+                }).updateDisplayType({
+                    displayType: ui.FieldDisplayType.HIDDEN
+                });
+
                 form.addSubmitButton({
                     label : 'SUBMIT ORDER'
                 });
@@ -182,15 +233,20 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
 
                 context.response.writePage(form);
 
-            } else {
+            } 
+            else {
                 var zee_id = context.request.parameters.custpage_zee_selected;
                 var b4 = context.request.parameters.custpage_b4;
                 var g500 = context.request.parameters.custpage_g500;
                 var kg1 = context.request.parameters.custpage_kg1;
                 var kg3 = context.request.parameters.custpage_kg3;
                 var kg5 = context.request.parameters.custpage_kg5;
+                var g500_toll = context.request.parameters.custpage_g500_toll;
+                var kg1_toll = context.request.parameters.custpage_kg1_toll;
+                var kg3_toll = context.request.parameters.custpage_kg3_toll;
+                var kg5_toll = context.request.parameters.custpage_kg5_toll;
 
-                createCustomRecord(zee_id, b4, g500, kg1, kg3, kg5);
+                createCustomRecord(zee_id, b4, g500, kg1, kg3, kg5, g500_toll, kg1_toll, kg3_toll, kg5_toll);
                 var form = ui.createForm({
                     title: 'MPEX Product Order Confirmation'
                 });
@@ -267,7 +323,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
 
         }
 
-        function createCustomRecord(zee_id, b4, g500, kg1, kg3, kg5) {
+        function createCustomRecord(zee_id, b4, g500, kg1, kg3, kg5, g500_toll, kg1_toll, kg3_toll, kg5_toll) {
             var activeOrder = checkConnote(zee_id);
             //Load active order if it exists
             if (activeOrder != 0) {
@@ -282,7 +338,11 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_1kg_satchel', value: kg1});
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_3kg_satchel', value: kg3});
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_5kg_satchel', value: kg5});
-                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_total', value: b4 + g500 + kg1 + kg3 + kg5});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_500_satchel_toll', value: g500_toll});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_1kg_satchel_toll', value: kg1_toll});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_3kg_satchel_toll', value: kg3_toll});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_5kg_satchel_toll', value: kg5_toll});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_total', value: b4 + g500 + kg1 + kg3 + kg5 + g500_toll + kg1_toll + kg3_toll + kg5_toll});
                 //mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_date', value: date});
 
                 mpexOrderRec.save({
@@ -348,7 +408,13 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_1kg_satchel', value: kg1});
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_3kg_satchel', value: kg3});
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_5kg_satchel', value: kg5});
-                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_total', value: b4 + g500 + kg1 + kg3 + kg5});
+
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_500_satchel_toll', value: g500_toll});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_1kg_satchel_toll', value: kg1_toll});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_3kg_satchel_toll', value: kg3_toll});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_5kg_satchel_toll', value: kg5_toll});
+                mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_total', value: b4 + g500 + kg1 + kg3 + kg5 + g500_toll + kg1_toll + kg3_toll + kg5_toll});
+                
                 //mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_date', value: date });
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_mp_id', value: zee_id});
                 mpexOrderRec.setValue({fieldId: 'custrecord_mpex_order_toll_acc_num', value: tollAcctNum});
@@ -399,8 +465,9 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
             //Important Instructions box
             inlineQty += '<div></div>';
             inlineQty += '<div class="form-group container test_section">';
-            inlineQty += '<div style=\"background-color: #cfeefc !important;border: 1px solid #417ed9;padding: 20px 30px 30px 30px\"><b><u>Important Instructions:</u></b>';
+            inlineQty += '<div style=\"background-color: #CFE0CE !important;border: 1px solid #379E8F;padding: 20px 30px 30px 30px\"><b><u>Important Instructions:</u></b>';
             inlineQty += '<ul><li><b><u>MPEX Products</u></b>: 1 MPEX product is equivalent to a pack of 10. Please enter the number of 10 packs you require for each item. The minimum number you can order is 10</li>';
+            inlineQty += '<li><b><u>TOLL Products</u></b>: Please enter the number of items you require in multiples of 5. The minimum number you can order is 10</li>';
             inlineQty += '<li><b><u>Submission</u></b>: Press the "Save Order" button at the top of the screen to submit your order and continue to the confirmation page.</li>';
             inlineQty += '<li>You may only enter numbers into the relevant fields. Entering text will result in an input error and you will be asked to fill out the field again</li>';
             inlineQty += '<li>You will have the option to use the up and down arrows on the far right hand side of the field to set the number of products you require</li>';
@@ -460,6 +527,43 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
             return inlineQty;
         }
 
+        function inputFieldsToll(g500, kg1, kg3, kg5, test) {
+            //Add Break
+            //var inlineQty = '<div class="form-group container break_section"><div class="row"></div></div>'
+                          
+            //500g AND 5KG Options
+            var inlineQty = '<div class="form-group container g500_section_toll">';
+            inlineQty += '<div class="row">';
+            if (test) {
+                inlineQty += '<div class="col-xs-6 g500_env_toll"><div class="input-group"><span class="input-group-addon" id="500g">500G SATCHEL  </span><input id="500g_text_toll" type="number" min="10" step="5" class="form-control 500g"  value="' + g500 + '"/></div></div>';
+                inlineQty += '<div class="col-xs-6 kg3_env_toll"><div class="input-group"><span class="input-group-addon" id="3kg">3KG SATCHEL</span><input id="3kg_text_toll" type="number" min="10" step="5" class="form-control 3kg"   value="' + kg3 + '"/></div></div>';
+            } else {
+                inlineQty += '<div class="col-xs-6 g500_env_toll"><div class="input-group"><span class="input-group-addon" id="500g">500G SATCHEL  </span><input id="500g_text_toll" type="number" min="10" step="5" class="form-control 500g"   placeholder="Enter quantity" value="' + g500 + '"/></div></div>';
+                inlineQty += '<div class="col-xs-6 kg3_env_toll"><div class="input-group"><span class="input-group-addon" id="3kg">3KG SATCHEL</span><input id="3kg_text_toll" type="number" min="10" step="5" class="form-control 3kg"   placeholder="Enter quantity" value="' + kg3 + '"/></div></div>';
+            }
+            inlineQty += '</div>';
+            inlineQty += '</div>';
+
+            //1KG and B4 options
+            inlineQty += '<div class="form-group container b4_section_toll">';
+            inlineQty += '<div class="row">';
+            if (test) {
+                inlineQty += '<div class="col-xs-6 kg1_env_toll"><div class="input-group"><span class="input-group-addon" id="1kg">1KG SATCHEL    </span><input id="1kg_text_toll" type="number" min="10" step="5" class="form-control 1kg"  value="' + kg1 + '"/></div></div>';
+                inlineQty += '<div class="col-xs-6 kg5_env_toll"><div class="input-group"><span class="input-group-addon" id="5kg">5KG SATCHEL  </span><input id="5kg_text_toll" type="number" min="10" step="5" class="form-control 5kg"   value="' + kg5 + '"/></div></div>';
+
+            } else {
+                inlineQty += '<div class="col-xs-6 kg1_env_toll"><div class="input-group"><span class="input-group-addon" id="1kg">1KG SATCHEL    </span><input id="1kg_text_toll" type="number" min="10" step="5" class="form-control 1kg"  placeholder="Enter quantity"value="' + kg1 + '"/></div></div>';    
+                inlineQty += '<div class="col-xs-6 kg5_env_toll"><div class="input-group"><span class="input-group-addon" id="5kg">5KG SATCHEL  </span><input id="5kg_text_toll" type="number" min="10" step="5" class="form-control 5kg"   placeholder="Enter quantity" value="' + kg5 + '"/></div></div>';
+
+            }
+            inlineQty += '</div>';
+            inlineQty += '</div>';
+
+            
+            
+            return inlineQty;
+        }
+
         
         /**
          * The table that will display the differents invoices linked to the franchisee and the time period.
@@ -468,7 +572,7 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
         function dataTable() {
             var inlineQty = '<br></br><style>table#mpex_orders {font-size: 12px;text-align: center;border: none;}.dataTables_wrapper {font-size: 14px;}table#mpex_orders th{text-align: center;} .bolded{font-weight: bold;}</style>';
             inlineQty += '<table id="mpex_orders" class="table table-responsive table-striped customer tablesorter" style="width: 100%;">';
-            inlineQty += '<thead style="color: white;background-color: #607799;">';
+            inlineQty += '<thead style="color: white;background-color: #379E8F;">';
             inlineQty += '<tr class="text-center">';
             inlineQty += '</tr>';
             inlineQty += '</thead>';

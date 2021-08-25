@@ -315,7 +315,7 @@ function(ui, email, runtime, search, record, log, redirect, format, task, file, 
     function dateFilterSection() {
         var inlineQty = '<div class="form-group container total_amount_section">';
         inlineQty += '<div class="row">';
-        inlineQty += '<div class="col-xs-18 heading1"><h4><span class="label label-default col-xs-12">DATE FILTER</span></h4></div>';
+        inlineQty += '<div class="col-xs-18 heading1"><h4><span style="background-color:#379E8F" class="label label-default col-xs-12">DATE FILTER</span></h4></div>';
         inlineQty += '</div>';
         inlineQty += '</div>';
 
