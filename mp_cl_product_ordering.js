@@ -27,7 +27,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     { title: 'MAILPLUS - 1kg Satchel'}, // 5
                     { title: 'MAILPLUS - 3kg Satchel'}, // 6
                     { title: 'MAILPLUS - 5kg Satchel'}, // 7
-                    { title: 'TOLL - 500g Satchel'}, // 8
+                    // { title: 'TOLL - 500g Satchel'}, // 8
                     { title: 'TOLL - 1kg Satchel'}, // 9 
                     { title: 'TOLL - 3kg Satchel'}, // 10
                     { title: 'TOLL - 5kg Satchel'}, // 11
@@ -108,17 +108,17 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                             $(this).val(newVal);
                         }
                 });
-                $("#500g_text_toll").blur(function(){
-                    var val = $(this).val();
-                    if (val < 10) {
-                        $(this).val(10);
-                    }
-                    else if( val % 5 != 0){
-                        var remainderVal = (val % 5);
-                        var newVal = (val-remainderVal) + 5;
-                        $(this).val(newVal);
-                    }
-                });
+                // $("#500g_text_toll").blur(function(){
+                //     var val = $(this).val();
+                //     if (val < 10) {
+                //         $(this).val(10);
+                //     }
+                //     else if( val % 5 != 0){
+                //         var remainderVal = (val % 5);
+                //         var newVal = (val-remainderVal) + 5;
+                //         $(this).val(newVal);
+                //     }
+                // });
                 $("#3kg_text_toll").blur(function(){
                     var val = $(this).val();
                     if (val < 10) {
@@ -205,7 +205,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 var kg1 = searchResult.getValue({ name: 'custrecord_mpex_order_1kg_satchel'});
                 var kg3 = searchResult.getValue({ name: 'custrecord_mpex_order_3kg_satchel'});
                 var kg5 = searchResult.getValue({ name: 'custrecord_mpex_order_5kg_satchel'});
-                var g500_toll = searchResult.getValue({ name: 'custrecord_mpex_order_500_satchel_toll'});
+                // var g500_toll = searchResult.getValue({ name: 'custrecord_mpex_order_500_satchel_toll'});
                 var kg1_toll = searchResult.getValue({ name: 'custrecord_mpex_order_1kg_satchel_toll'});
                 var kg3_toll = searchResult.getValue({ name: 'custrecord_mpex_order_3kg_satchel_toll'});
                 var kg5_toll = searchResult.getValue({ name: 'custrecord_mpex_order_5kg_satchel_toll'});
@@ -225,7 +225,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 } else {
                     status = "Check with Head Office";
                 }
-                tableSet.push([status, date, zeeName, b4, g500, kg1, kg3,  kg5, g500_toll, kg1_toll, kg3_toll, kg5_toll, connote]);
+                tableSet.push([status, date, zeeName, b4, g500, kg1, kg3,  kg5, kg1_toll, kg3_toll, kg5_toll, connote]);
 
                 return true;
             
@@ -280,7 +280,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 var kg1 = checkNull($('#1kg_text').val());
                 var kg3 = checkNull($('#3kg_text').val());
                 var kg5 = checkNull($('#5kg_text').val());
-                var g500_toll = checkNull($('#500g_text_toll').val());
+                // var g500_toll = checkNull($('#500g_text_toll').val());
                 var kg1_toll = checkNull($('#1kg_text_toll').val());
                 var kg3_toll = checkNull($('#3kg_text_toll').val());
                 var kg5_toll = checkNull($('#5kg_text_toll').val());
@@ -291,7 +291,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 currentScript.setValue({ fieldId: 'custpage_kg1', value: kg1});
                 currentScript.setValue({ fieldId: 'custpage_kg3', value: kg3});
                 currentScript.setValue({ fieldId: 'custpage_kg5', value: kg5});
-                currentScript.setValue({ fieldId: 'custpage_g500_toll', value: g500_toll});
+                // currentScript.setValue({ fieldId: 'custpage_g500_toll', value: g500_toll});
                 currentScript.setValue({ fieldId: 'custpage_kg1_toll', value: kg1_toll});
                 currentScript.setValue({ fieldId: 'custpage_kg3_toll', value: kg3_toll});
                 currentScript.setValue({ fieldId: 'custpage_kg5_toll', value: kg5_toll});

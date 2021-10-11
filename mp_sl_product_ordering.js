@@ -535,10 +535,10 @@ define(['N/ui/serverWidget', 'N/email', 'N/runtime', 'N/search', 'N/record', 'N/
             var inlineQty = '<div class="form-group container g500_section_toll">';
             inlineQty += '<div class="row">';
             if (test) {
-                inlineQty += '<div class="col-xs-6 g500_env_toll"><div class="input-group"><span class="input-group-addon" id="500g">500G SATCHEL  </span><input id="500g_text_toll" type="number" min="10" step="5" class="form-control 500g"  value="' + g500 + '"/></div></div>';
+                // inlineQty += '<div class="col-xs-6 g500_env_toll"><div class="input-group"><span class="input-group-addon" id="500g">500G SATCHEL  </span><input id="500g_text_toll" type="number" min="10" step="5" class="form-control 500g"  value="' + g500 + '"/></div></div>';
                 inlineQty += '<div class="col-xs-6 kg3_env_toll"><div class="input-group"><span class="input-group-addon" id="3kg">3KG SATCHEL</span><input id="3kg_text_toll" type="number" min="10" step="5" class="form-control 3kg"   value="' + kg3 + '"/></div></div>';
             } else {
-                inlineQty += '<div class="col-xs-6 g500_env_toll"><div class="input-group"><span class="input-group-addon" id="500g">500G SATCHEL  </span><input id="500g_text_toll" type="number" min="10" step="5" class="form-control 500g"   placeholder="Enter quantity" value="' + g500 + '"/></div></div>';
+                // inlineQty += '<div class="col-xs-6 g500_env_toll"><div class="input-group"><span class="input-group-addon" id="500g">500G SATCHEL  </span><input id="500g_text_toll" type="number" min="10" step="5" class="form-control 500g"   placeholder="Enter quantity" value="' + g500 + '"/></div></div>';
                 inlineQty += '<div class="col-xs-6 kg3_env_toll"><div class="input-group"><span class="input-group-addon" id="3kg">3KG SATCHEL</span><input id="3kg_text_toll" type="number" min="10" step="5" class="form-control 3kg"   placeholder="Enter quantity" value="' + kg3 + '"/></div></div>';
             }
             inlineQty += '</div>';

@@ -41,7 +41,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     { title: "MAILPLUS - 1kg Satchel" },   //6
                     { title: "MAILPLUS - 3kg Satchel" },   //7
                     { title: "MAILPLUS - 5kg Satchel" },   //8
-                    { title: "TOLL - 500g Satchel" },  //9
+                    // { title: "TOLL - 500g Satchel" },  //9
                     { title: "TOLL - 1kg Satchel" },   //10
                     { title: "TOLL - 3kg Satchel" },   //11
                     { title: "TOLL - 5kg Satchel" },   //12
@@ -501,7 +501,8 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
          */
         function saveCsv(ordersDataSet) {
             var sep = "sep=;";
-            var headers = ["Date", "MP Internal ID", "TOLL Account #", "Account Name", "B4 Envelope", "500g Satchel", "1kg Satchel", "3kg Satchel", "5kg Satchel", "TOLL - 500g Satchel", "TOLL - 1kg Satchel", "TOLL - 3kg Satchel", "TOLL - 5kg Satchel", "Total", "DX Address", "DX Exchange", "State", "Postcode", "Connote #"]
+            // var headers = ["Date", "MP Internal ID", "TOLL Account #", "Account Name", "B4 Envelope", "500g Satchel", "1kg Satchel", "3kg Satchel", "5kg Satchel", "TOLL - 500g Satchel", "TOLL - 1kg Satchel", "TOLL - 3kg Satchel", "TOLL - 5kg Satchel", "Total", "DX Address", "DX Exchange", "State", "Postcode", "Connote #"]
+            var headers = ["Date", "MP Internal ID", "TOLL Account #", "Account Name", "B4 Envelope", "500g Satchel", "1kg Satchel", "3kg Satchel", "5kg Satchel", "TOLL - 1kg Satchel", "TOLL - 3kg Satchel", "TOLL - 5kg Satchel", "Total", "DX Address", "DX Exchange", "State", "Postcode", "Connote #"]
             headers = headers.join(';'); // .join(', ')
 
             var csv = sep + "\n" + headers + "\n";
