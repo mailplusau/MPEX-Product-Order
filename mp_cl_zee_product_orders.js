@@ -4,7 +4,7 @@
  */
 
 define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/email', 'N/currentRecord'],
-    function(error, runtime, search, url, record, format, email, currentRecord) {
+    function (error, runtime, search, url, record, format, email, currentRecord) {
         var baseURL = 'https://1048144.app.netsuite.com';
         if (runtime.EnvType == "SANDBOX") {
             baseURL = 'https://1048144-sb3.app.netsuite.com';
@@ -32,58 +32,59 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 data: ordersDataSet,
                 pageLength: 1000,
                 columns: [
-                    { title: "Date"},           //0
-                    { title: "MP Internal ID"}, //1
+                    { title: "Date" },           //0
+                    { title: "MP Internal ID" }, //1
                     { title: "TOLL Account #" },//2
                     { title: "Account Name" },  //3
-                    { title: "B4 Envelope" },   //4
-                    { title: "MAILPLUS - 500g Satchel" },  //5
-                    { title: "MAILPLUS - 1kg Satchel" },   //6
-                    { title: "MAILPLUS - 3kg Satchel" },   //7
-                    { title: "MAILPLUS - 5kg Satchel" },   //8
-                    // { title: "TOLL - 500g Satchel" },  //9
+                    { title: "TOLL - 500g Satchel" },  //9
                     { title: "TOLL - 1kg Satchel" },   //10
                     { title: "TOLL - 3kg Satchel" },   //11
-                    { title: "TOLL - 5kg Satchel" },   //12
+                    { title: "TOLL - 5kg Satchel" },
+                    // { title: "B4 Envelope" },   //4
+                    { title: "TOLL PADDED - 500g Satchel" },  //5
+                    { title: "TOLL PADDED - 1kg Satchel" },   //6
+                    { title: "TOLL PADDED - 3kg Satchel" },   //7
+                    // { title: "TOLL PADDED - 5kg Satchel" },   //8
+                    //12
                     { title: "Total" },         //13
                     { title: "DX Address" },    //14
                     { title: "DX Exchange" },   //15
                     { title: "State" },         //16
                     { title: "Postcode" },      //17
-                    { title: "Connote #"},       //18
-                    { title: "Status"}       //19
+                    { title: "Connote #" },       //18
+                    { title: "Status" }       //19
                 ],
                 order: [[3, "asc"]],
-                
+
             });
-        
+
             $('#product_order-preview thead tr').addClass('text-center');
-        
+
             updateOrdersTable();
 
             var field = 'process';
             var url = window.location.href;
-            if(url.indexOf('&' + field + '=') != -1) {
+            if (url.indexOf('&' + field + '=') != -1) {
                 console.log("EXISTSSS");
                 $('.progress').addClass('show');
                 $('.break_section').addClass('show');
-                setTimeout(function(){ processMove(); }, 100);
+                setTimeout(function () { processMove(); }, 100);
             }
-            
-            $(document).ready(function(){
 
-                $("#process_order").click(function(){
-                   alert("Please wait while all active orders are processed");
-                   
+            $(document).ready(function () {
+
+                $("#process_order").click(function () {
+                    alert("Please wait while all active orders are processed");
+
                 });
-            });      
+            });
         }
 
-        function resetZeeOrders() {           
-            
+        function resetZeeOrders() {
+
             //prod = 1094, sb = ?
             //var url = 'https://1048144-sb3.app.netsuite.com' + "/app/site/hosting/scriptlet.nl?script=1089&deploy=1";
-            var url = baseURL + "/app/site/hosting/scriptlet.nl?script=1094&deploy=1";  
+            var url = baseURL + "/app/site/hosting/scriptlet.nl?script=1094&deploy=1";
             url += "&process=" + true + "";
             window.location.href = url;
         }
@@ -103,10 +104,10 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
 
             var initial_count = activeSearch.runPaged().count;
 
-            
+
 
             console.log("initial", initial_count);
-            var totalTime = initial_count*7;
+            var totalTime = initial_count * 7;
             console.log("total", totalTime);
             var elem = document.getElementById("progress-records");
             var width = 0;
@@ -144,9 +145,9 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             } else {
                 $(".progress-bar").removeClass("progress-bar-warning");
                 $(".progress-bar").addClass("progress-bar-success");
-                var elem = document.getElementById("progress-records");   
-                elem.style.width = 100 + '%'; 
-                elem.innerHTML = 100 * 1  + '%';
+                var elem = document.getElementById("progress-records");
+                elem.style.width = 100 + '%';
+                elem.innerHTML = 100 * 1 + '%';
                 updateOrdersTable();
             }
         }
@@ -164,7 +165,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 id: 'customsearch_mpex_zee_order_search',
                 type: 'customrecord_zee_mpex_order'
             });
-            
+
             zeeSearch.filters.push(search.createFilter({
                 name: 'custrecord_mpex_order_status',
                 operator: search.Operator.IS,
@@ -173,19 +174,19 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
 
             var zeeResultSet = zeeSearch.run();
 
-            zeeResultSet.each(function(searchResult) {    
-                var status = searchResult.getValue({ name: 'custrecord_mpex_order_status'});
-                var connote = searchResult.getValue({ name: 'custrecord_mpex_order_connote'});
-                var zeeId =   searchResult.getValue({name: "custrecord_mpex_order_franchisee"});
+            zeeResultSet.each(function (searchResult) {
+                var status = searchResult.getValue({ name: 'custrecord_mpex_order_status' });
+                var connote = searchResult.getValue({ name: 'custrecord_mpex_order_connote' });
+                var zeeId = searchResult.getValue({ name: "custrecord_mpex_order_franchisee" });
 
                 if (status == 1 && isNullorEmpty(connote) && zeeIdSet.indexOf(zeeId) == -1) {
                     zeeIdSet.push(zeeId);
-                    var date = searchResult.getValue({name: "lastmodified" });
-                    var tollAcctNum = searchResult.getValue({name: "custrecord_mpex_order_toll_acc_num" });
-                    var accName = 'MailPlus - ' + searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
-                    
-                    if (searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" }).toUpperCase().indexOf("OLD") !== -1) {
-                        accName = searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
+                    var date = searchResult.getValue({ name: "lastmodified" });
+                    var tollAcctNum = searchResult.getValue({ name: "custrecord_mpex_order_toll_acc_num" });
+                    var accName = 'MailPlus - ' + searchResult.getValue({ name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
+
+                    if (searchResult.getValue({ name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" }).toUpperCase().indexOf("OLD") !== -1) {
+                        accName = searchResult.getValue({ name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
                         accName = accName.replace("OLD", '');
                         accName = accName.replace("Old", "");
                         accName = accName.replace("June 2019", "");
@@ -202,34 +203,72 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                         accName = 'MailPlus - Head Office';
                     }
 
-                    var mpex_b4 = searchResult.getValue({name: "custrecord_mpex_order_b4" });
-                    var mpex_500g = searchResult.getValue({name: "custrecord_mpex_order_500_satchel" });
-                    var mpex_1kg = searchResult.getValue({name: "custrecord_mpex_order_1kg_satchel" });
-                    var mpex_3kg = searchResult.getValue({name: "custrecord_mpex_order_3kg_satchel" });
-                    var mpex_5kg = searchResult.getValue({name: "custrecord_mpex_order_5kg_satchel" });
-                    
-                    // var mpex_500g_toll = searchResult.getValue({name: "custrecord_mpex_order_500_satchel_toll" });
-                    var mpex_1kg_toll = searchResult.getValue({name: "custrecord_mpex_order_1kg_satchel_toll" });
-                    var mpex_3kg_toll = searchResult.getValue({name: "custrecord_mpex_order_3kg_satchel_toll" });
-                    var mpex_5kg_toll = searchResult.getValue({name: "custrecord_mpex_order_5kg_satchel_toll" });
+                    var mpex_b4 = searchResult.getValue({ name: "custrecord_mpex_order_b4" });
+                    var mpex_500g = searchResult.getValue({ name: "custrecord_mpex_order_500_satchel" });
+                    var mpex_1kg = searchResult.getValue({ name: "custrecord_mpex_order_1kg_satchel" });
+                    var mpex_3kg = searchResult.getValue({ name: "custrecord_mpex_order_3kg_satchel" });
+                    var mpex_5kg = searchResult.getValue({ name: "custrecord_mpex_order_5kg_satchel" });
+
+                    var mpex_500g_toll = searchResult.getValue({ name: "custrecord_mpex_order_500_satchel_toll" });
+                    var mpex_1kg_toll = searchResult.getValue({ name: "custrecord_mpex_order_1kg_satchel_toll" });
+                    var mpex_3kg_toll = searchResult.getValue({ name: "custrecord_mpex_order_3kg_satchel_toll" });
+                    var mpex_5kg_toll = searchResult.getValue({ name: "custrecord_mpex_order_5kg_satchel_toll" });
                     var toll_total = 0;
+
+                    if (isNullorEmpty(mpex_b4)) {
+                        mpex_b4 = 0;
+                    }
+
+                    if (isNullorEmpty(mpex_500g)) {
+                        mpex_500g = 0;
+                    }
+
+                    if (isNullorEmpty(mpex_1kg)) {
+                        mpex_1kg = 0;
+                    }
+
+                    if (isNullorEmpty(mpex_3kg)) {
+                        mpex_3kg = 0;
+                    }
+
+                    if (isNullorEmpty(mpex_5kg)) {
+                        mpex_5kg = 0;
+                    }
+
+                    if (isNullorEmpty(mpex_500g_toll)) {
+                        mpex_500g_toll = 0;
+                    }
+
+                    if (isNullorEmpty(mpex_1kg_toll)) {
+                        mpex_1kg_toll = 0;
+                    }
+
+                    if (isNullorEmpty(mpex_3kg_toll)) {
+                        mpex_3kg_toll = 0;
+                    }
+
+                    if (isNullorEmpty(mpex_5kg_toll)) {
+                        mpex_5kg_toll = 0;
+                    }
+
+
                     // if (!isNullorEmpty(mpex_500g_toll) && !isNullorEmpty(mpex_1kg_toll) && !isNullorEmpty(mpex_3kg_toll) && !isNullorEmpty(mpex_5kg_toll)) {
                     //     toll_total = parseInt(mpex_500g_toll) + parseInt(mpex_1kg_toll) + parseInt(mpex_3kg_toll) + parseInt(mpex_5kg_toll);
                     // }
-                    if (!isNullorEmpty(mpex_1kg_toll) && !isNullorEmpty(mpex_3kg_toll) && !isNullorEmpty(mpex_5kg_toll)) {
-                        toll_total = parseInt(mpex_1kg_toll) + parseInt(mpex_3kg_toll) + parseInt(mpex_5kg_toll);
-                    }
+                    // if (!isNullorEmpty(mpex_1kg_toll) && !isNullorEmpty(mpex_3kg_toll) && !isNullorEmpty(mpex_5kg_toll)) {
+                        toll_total = parseInt(mpex_1kg_toll) + parseInt(mpex_3kg_toll)  + parseInt(mpex_500g_toll);
+                    // }
                     var total = parseInt(mpex_b4) + parseInt(mpex_500g) + parseInt(mpex_1kg) + parseInt(mpex_3kg) + parseInt(mpex_5kg) + toll_total;
 
-                    var dxAddr = searchResult.getValue({name: "custrecord_mpex_order_dx_addr" });
-                    var dxExch = searchResult.getValue({name: "custrecord_mpex_order_dx_exch" });
-                    var state = searchResult.getValue({name: "custrecord_mpex_order_state" });
-                    var zip = searchResult.getValue({name: "custrecord_mpex_order_postcode" });
+                    var dxAddr = searchResult.getValue({ name: "custrecord_mpex_order_dx_addr" });
+                    var dxExch = searchResult.getValue({ name: "custrecord_mpex_order_dx_exch" });
+                    var state = searchResult.getValue({ name: "custrecord_mpex_order_state" });
+                    var zip = searchResult.getValue({ name: "custrecord_mpex_order_postcode" });
                     var connote = '';
                     // ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote, status]);
-                    ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote, status]);
+                    ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, total, dxAddr, dxExch, state, zip, connote, status]);
                     // ordersDataSet2.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote]);
-                    ordersDataSet2.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote]);
+                    ordersDataSet2.push([date, zeeId, tollAcctNum, accName, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, total, dxAddr, dxExch, state, zip, connote]);
 
                 }
                 return true;
@@ -242,8 +281,8 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             });
 
             var ordersSearchResults = zeeSearch.run();
-            
-            ordersSearchResults.each(function(orderResult) {
+
+            ordersSearchResults.each(function (orderResult) {
 
                 var zeeId = orderResult.getValue('internalid');
                 if (zeeIdSet.indexOf(zeeId) == -1) {
@@ -260,7 +299,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                         accName = accName.trim();
                         accName = 'MailPlus - ' + accName;
                     }
-                    
+
                     if (zeeId == 696179) {
                         accName = 'MailPlus - Brisbane CBD';
                     }
@@ -272,20 +311,20 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     var mpex_1kg = '';
                     var mpex_3kg = '';
                     var mpex_5kg = '';
-                    
-                    // var mpex_500g_toll = '';
+
+                    var mpex_500g_toll = '';
                     var mpex_1kg_toll = '';
                     var mpex_3kg_toll = '';
                     var mpex_5kg_toll = '';
 
                     var total = 0;
-                    
+
                     var dxAddr = orderResult.getValue({
                         name: "custrecord_ap_lodgement_addr2",
                         join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
                         label: "Address 2"
                     });
-                            
+
                     var dxExch = orderResult.getValue({
                         name: "custrecord_ap_lodgement_suburb",
                         join: "CUSTENTITY__TOLL_PICKUP_DX_NO",
@@ -310,13 +349,15 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     //console.log('orderResult : ', orderResult);
                     //console.log('vals: ', zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, total, dxAddr, dxExch, state, zip)
                     // ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote, status]);
-                    ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote, status]);
+                    // ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote, status]);
+                    ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, total, dxAddr, dxExch, state, zip, connote, status]);
                     // ordersDataSet2.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote]);
-                    ordersDataSet2.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote]);
+                    // ordersDataSet2.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote]);
+                    ordersDataSet2.push([date, zeeId, tollAcctNum, accName, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, total, dxAddr, dxExch, state, zip, connote]);
 
                 }
-                
-                
+
+
                 return true;
 
             });
@@ -358,14 +399,14 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
 
             return true;
         }
-        
+
         function submitDate() {
             var date_from = $('#date_from').val();
             var date_to = $('#date_to').val();
             var zee = document.getElementById("zee_dropdown").value;
             var status = document.getElementById("status_dropdown").value;
             console.log(status);
-            
+
 
             if (!isNullorEmpty(date_from)) {
                 date_from = dateISOToNetsuite(date_from);
@@ -385,7 +426,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 } else {
                     dateLoadRecords(date_from, date_to, zee, status);
                 }
-                
+
             } else if (isNullorEmpty(date_from) && !isNullorEmpty(date_to)) {
                 alert('Please select a starting date or remove all date filters and submit search.');
             } else if (!isNullorEmpty(zee)) {
@@ -406,7 +447,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                 id: 'customsearch_mpex_zee_order_search',
                 type: 'customrecord_zee_mpex_order'
             });
-            
+
             if (!isNullorEmpty(date_from) && !isNullorEmpty(date_to)) {
                 zeeSearch.filters.push(search.createFilter({
                     name: 'lastmodified',
@@ -419,7 +460,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     values: date_to
                 }));
             }
-            
+
             if (!isNullorEmpty(zee)) {
                 zeeSearch.filters.push(search.createFilter({
                     name: 'custrecord_mpex_order_franchisee',
@@ -438,18 +479,18 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             }
             var zeeResultSet = zeeSearch.run();
 
-            zeeResultSet.each(function(searchResult) {    
-                var status = searchResult.getValue({ name: 'custrecord_mpex_order_status'});
-                var connote = searchResult.getValue({ name: 'custrecord_mpex_order_connote'});
-                var zeeId =   searchResult.getValue({name: "custrecord_mpex_order_franchisee"});
+            zeeResultSet.each(function (searchResult) {
+                var status = searchResult.getValue({ name: 'custrecord_mpex_order_status' });
+                var connote = searchResult.getValue({ name: 'custrecord_mpex_order_connote' });
+                var zeeId = searchResult.getValue({ name: "custrecord_mpex_order_franchisee" });
 
                 //zeeIdSet.push(zeeId);
-                var date = searchResult.getValue({name: "lastmodified" });
-                var tollAcctNum = searchResult.getValue({name: "custrecord_mpex_order_toll_acc_num" });
-                var accName = 'MailPlus - ' + searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
-                
-                if (searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" }).toUpperCase().indexOf("OLD") !== -1) {
-                    accName = searchResult.getValue({name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
+                var date = searchResult.getValue({ name: "lastmodified" });
+                var tollAcctNum = searchResult.getValue({ name: "custrecord_mpex_order_toll_acc_num" });
+                var accName = 'MailPlus - ' + searchResult.getValue({ name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
+
+                if (searchResult.getValue({ name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" }).toUpperCase().indexOf("OLD") !== -1) {
+                    accName = searchResult.getValue({ name: "entityid", join: "CUSTRECORD_MPEX_ORDER_FRANCHISEE" });
                     accName = accName.replace("OLD", '');
                     accName = accName.replace("Old", "");
                     accName = accName.replace("June 2019", "");
@@ -465,35 +506,73 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
                     accName = 'MailPlus - Head Office';
                 }
 
-                var mpex_b4 = searchResult.getValue({name: "custrecord_mpex_order_b4" });
-                var mpex_500g = searchResult.getValue({name: "custrecord_mpex_order_500_satchel" });
-                var mpex_1kg = searchResult.getValue({name: "custrecord_mpex_order_1kg_satchel" });
-                var mpex_3kg = searchResult.getValue({name: "custrecord_mpex_order_3kg_satchel" });
-                var mpex_5kg = searchResult.getValue({name: "custrecord_mpex_order_5kg_satchel" });
+                var mpex_b4 = searchResult.getValue({ name: "custrecord_mpex_order_b4" });
+                var mpex_500g = searchResult.getValue({ name: "custrecord_mpex_order_500_satchel" });
+                var mpex_1kg = searchResult.getValue({ name: "custrecord_mpex_order_1kg_satchel" });
+                var mpex_3kg = searchResult.getValue({ name: "custrecord_mpex_order_3kg_satchel" });
+                var mpex_5kg = searchResult.getValue({ name: "custrecord_mpex_order_5kg_satchel" });
 
-                var mpex_500g_toll = searchResult.getValue({name: "custrecord_mpex_order_500_satchel_toll" });
-                var mpex_1kg_toll = searchResult.getValue({name: "custrecord_mpex_order_1kg_satchel_toll" });
-                var mpex_3kg_toll = searchResult.getValue({name: "custrecord_mpex_order_3kg_satchel_toll" });
-                var mpex_5kg_toll = searchResult.getValue({name: "custrecord_mpex_order_5kg_satchel_toll" });
-                
+                var mpex_500g_toll = searchResult.getValue({ name: "custrecord_mpex_order_500_satchel_toll" });
+                var mpex_1kg_toll = searchResult.getValue({ name: "custrecord_mpex_order_1kg_satchel_toll" });
+                var mpex_3kg_toll = searchResult.getValue({ name: "custrecord_mpex_order_3kg_satchel_toll" });
+                var mpex_5kg_toll = searchResult.getValue({ name: "custrecord_mpex_order_5kg_satchel_toll" });
+
                 var toll_total = 0;
+
+                if (isNullorEmpty(mpex_b4)) {
+                    mpex_b4 = 0;
+                }
+
+                if (isNullorEmpty(mpex_500g)) {
+                    mpex_500g = 0;
+                }
+
+                if (isNullorEmpty(mpex_1kg)) {
+                    mpex_1kg = 0;
+                }
+
+                if (isNullorEmpty(mpex_3kg)) {
+                    mpex_3kg = 0;
+                }
+
+                if (isNullorEmpty(mpex_5kg)) {
+                    mpex_5kg = 0;
+                }
+
+                if (isNullorEmpty(mpex_500g_toll)) {
+                    mpex_500g_toll = 0;
+                }
+
+                if (isNullorEmpty(mpex_1kg_toll)) {
+                    mpex_1kg_toll = 0;
+                }
+
+                if (isNullorEmpty(mpex_3kg_toll)) {
+                    mpex_3kg_toll = 0;
+                }
+
+                if (isNullorEmpty(mpex_5kg_toll)) {
+                    mpex_5kg_toll = 0;
+                }
+
                 // if (!isNullorEmpty(mpex_500g_toll) && !isNullorEmpty(mpex_1kg_toll) && !isNullorEmpty(mpex_3kg_toll) && !isNullorEmpty(mpex_5kg_toll)) {
                 //     toll_total = parseInt(mpex_500g_toll) + parseInt(mpex_1kg_toll) + parseInt(mpex_3kg_toll) + parseInt(mpex_5kg_toll);
                 // }
 
-                if (!isNullorEmpty(mpex_1kg_toll) && !isNullorEmpty(mpex_3kg_toll) && !isNullorEmpty(mpex_5kg_toll)) {
-                    toll_total = parseInt(mpex_1kg_toll) + parseInt(mpex_3kg_toll) + parseInt(mpex_5kg_toll);
-                }
+                // if (!isNullorEmpty(mpex_1kg_toll) && !isNullorEmpty(mpex_3kg_toll) && !isNullorEmpty(mpex_5kg_toll)) {
+                    toll_total = parseInt(mpex_1kg_toll) + parseInt(mpex_3kg_toll)  + parseInt(mpex_500g_toll);
+                // }
                 var total = parseInt(mpex_b4) + parseInt(mpex_500g) + parseInt(mpex_1kg) + parseInt(mpex_3kg) + parseInt(mpex_5kg) + toll_total;
 
 
-                var dxAddr = searchResult.getValue({name: "custrecord_mpex_order_dx_addr" });
-                var dxExch = searchResult.getValue({name: "custrecord_mpex_order_dx_exch" });
-                var state = searchResult.getValue({name: "custrecord_mpex_order_state" });
-                var zip = searchResult.getValue({name: "custrecord_mpex_order_postcode" });
-                var connote = searchResult.getValue({name: "custrecord_mpex_order_connote" });;
+                var dxAddr = searchResult.getValue({ name: "custrecord_mpex_order_dx_addr" });
+                var dxExch = searchResult.getValue({ name: "custrecord_mpex_order_dx_exch" });
+                var state = searchResult.getValue({ name: "custrecord_mpex_order_state" });
+                var zip = searchResult.getValue({ name: "custrecord_mpex_order_postcode" });
+                var connote = searchResult.getValue({ name: "custrecord_mpex_order_connote" });;
                 // ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote, status]);
-                ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote, status]);
+                // ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_b4, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_1kg_toll, mpex_3kg_toll, mpex_5kg_toll, total, dxAddr, dxExch, state, zip, connote, status]);
+                ordersDataSet.push([date, zeeId, tollAcctNum, accName, mpex_500g, mpex_1kg, mpex_3kg, mpex_5kg, mpex_500g_toll, mpex_1kg_toll, mpex_3kg_toll, total, dxAddr, dxExch, state, zip, connote, status]);
 
                 return true;
             });
@@ -514,13 +593,13 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
         function saveCsv(ordersDataSet) {
             var sep = "sep=;";
             // var headers = ["Date", "MP Internal ID", "TOLL Account #", "Account Name", "B4 Envelope", "500g Satchel", "1kg Satchel", "3kg Satchel", "5kg Satchel", "TOLL - 500g Satchel", "TOLL - 1kg Satchel", "TOLL - 3kg Satchel", "TOLL - 5kg Satchel", "Total", "DX Address", "DX Exchange", "State", "Postcode", "Connote #"]
-            var headers = ["Date", "MP Internal ID", "TOLL Account #", "Account Name", "B4 Envelope", "500g Satchel", "1kg Satchel", "3kg Satchel", "5kg Satchel", "TOLL - 1kg Satchel", "TOLL - 3kg Satchel", "TOLL - 5kg Satchel", "Total", "DX Address", "DX Exchange", "State", "Postcode", "Connote #"]
+            var headers = ["Date", "MP Internal ID", "TOLL Account #", "Account Name", "TOLL - 500g Satchel", "TOLL - 1kg Satchel", "TOLL - 3kg Satchel", "TOLL - 5kg Satchel", "500g TOLL Padded Satchel", "1kg TOLL Padded Satchel", "3kg TOLL Padded Satchel", "Total", "DX Address", "DX Exchange", "State", "Postcode", "Connote #"]
             headers = headers.join(';'); // .join(', ')
 
             var csv = sep + "\n" + headers + "\n";
-            
-            
-            ordersDataSet.forEach(function(row) {
+
+
+            ordersDataSet.forEach(function (row) {
                 row = row.join(';');
                 csv += row;
                 csv += "\n";
@@ -536,10 +615,10 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             return true;
         }
 
-        function formatDate(testDate){
-            console.log('testDate: '+testDate);
-            var responseDate=format.format({value:testDate,type:format.Type.DATE});
-            console.log('responseDate: '+responseDate);
+        function formatDate(testDate) {
+            console.log('testDate: ' + testDate);
+            var responseDate = format.format({ value: testDate, type: format.Type.DATE });
+            console.log('responseDate: ' + responseDate);
             return responseDate;
         }
 
@@ -576,7 +655,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
 
 
         }
-        
+
         /**
          * Used to pass the values of `date_from` and `date_to` between the scripts and to Netsuite for the records and the search.
          * @param   {String} date_iso       "2020-06-01"
@@ -594,7 +673,7 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             }
             return date_netsuite;
         }
-        
+
         function replaceAll(string) {
             return string.split("/").join("-");
         }
@@ -610,8 +689,8 @@ define(['N/error', 'N/runtime', 'N/search', 'N/url', 'N/record', 'N/format', 'N/
             resetZeeOrders: resetZeeOrders,
             submitDate: submitDate,
             importConnote: importConnote
-        };  
+        };
     }
 
-    
+
 );
